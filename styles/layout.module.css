@@ -1,0 +1,10 @@
+.logoFont {
+  font-family: Exo, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+}
+.boxShadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+.borderTop { border-top: 1px solid #e5e5e5; }
+.borderBottom { border-bottom: 1px solid #e5e5e5; }
