@@ -10,6 +10,7 @@
     "deploy": "rm -rf node_modules/.cache && rimraf out && next build && next export && touch out/.nojekyll && touch out/CNAME && echo \"vremea.ionkom.com\" >> out/CNAME && gh-pages -d out -t true"
   },
   "dependencies": {
+    "@fast-csv/parse": "^4.3.2",
     "bootstrap": "^4.5.2",
     "next": "9.5.3",
     "react": "16.13.1",
