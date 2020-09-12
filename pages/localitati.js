@@ -4,7 +4,6 @@ import Layout, { siteTitle } from '../components/layout'
 import { getLocationsData } from '../lib/locations'
 
 export default function Locations({ allLocationsData }) {
-  console.log(allLocationsData)
   return (
     <Layout>
       <Head>
@@ -21,7 +20,11 @@ export default function Locations({ allLocationsData }) {
         <p>Lista de locatii</p>
         <ul>
           {allLocationsData.map(({ id, lat, lon, name, county, region }) => (
-            <li key={id}>{name}</li>
+            <li key={id}>
+              <Link href="/localitati/[id]" as={`/localitati/${id}`}>
+                <a>{name}</a>
+              </Link>
+            </li>
           ))}
         </ul>
       </section>

@@ -28,17 +28,57 @@ export function getLocationsData(first=10) {
             else
                 locations.push(
                     {
-                        'id': locations.length,
-                        'lat': row[0],
-                        'lon': row[1],
-                        'name': row[2],
-                        'county': row[3],
+                        id: locations.length,
+                        lat: row[0],
+                        lon: row[1],
+                        name: row[2],
+                        county: row[3],
                         // 'countyAutoAbr': row[4],
                         // 'population': row[5],
-                        'region': row[6]
+                        region: row[6]
                     }
                 )
         })
         .on('end', () => resolve(locations));
+    })
+}
+
+export function getAllLocationIds(first=10) {
+    let ids = []
+    for (let i=0;i<first;i++)
+        ids.push(
+            {
+                params: {
+                    id: `${i}`
+                }
+            })
+    return ids
+}
+
+export function getLocationData(id: number) {
+    let fid = 0
+    return new Promise((resolve, reject) => {
+        parseFile(locationsFilePath)
+        .on('error', reject)
+        .on('data', row => {
+            // skip column names
+            if (row[0] == 'X') return
+            // return first locations
+            if (fid == id ) return resolve(
+                {
+                    id: fid,
+                    lat: row[0],
+                    lon: row[1],
+                    name: row[2],
+                    county: row[3],
+                    // 'countyAutoAbr': row[4],
+                    // 'population': row[5],
+                    region: row[6]
+                }
+            )
+            else
+                fid++
+        })
+        .on('end', () => resolve());
     })
 }
