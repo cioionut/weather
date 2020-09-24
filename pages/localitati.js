@@ -3,22 +3,24 @@ import { initializeApollo } from '../lib/apolloClient'
 import Head from 'next/head'
 import Link from 'next/link'
 import Layout, { siteTitle } from '../components/layout'
-// import { getLocationsData } from '../lib/locations'
 
 
 export const ALL_LOCATIONS_QUERY = gql`
-  query allLocations($skip: Int!, $take: Int!) {
-    allLocations(skip: $skip, take: $take) {
+  query locations($skip: Int!, $take: Int!) {
+    locations(skip: $skip, take: $take) {
       id
       name
+      account_county {
+        name
+      }
     }
-    _allLocationsMeta {
+    _locationsMeta {
       count
     }
   }
 `;
 
-export const allLocationsQueryVars = {
+export const locationsQueryVars = {
   skip: 0,
   take: 10
 }
@@ -28,7 +30,7 @@ export default function Locations() {
   const { loading, error, data, fetchMore, networkStatus } = useQuery(
     ALL_LOCATIONS_QUERY,
     {
-      variables: allLocationsQueryVars,
+      variables: locationsQueryVars,
       // Setting this value to true will make the component rerender when
       // the "networkStatus" changes, so we are able to know if it is fetching
       // more data
@@ -41,15 +43,15 @@ export default function Locations() {
   const loadMoreLocations = () => {
     fetchMore({
       variables: {
-        skip: allLocations.length,
+        skip: locations.length,
       },
     })
   }
   if (error) return <div>Error</div>  // <ErrorMessage message="Error loading posts." />
   if (loading && !loadingMoreLocations) return <div>Loading</div>
 
-  let { allLocations, _allLocationsMeta } = data
-  const areMoreLocations = allLocations.length < _allLocationsMeta.count
+  let { locations, _locationsMeta } = data
+  const areMoreLocations = locations.length < _locationsMeta.count
 
   return (
     <Layout>
@@ -66,9 +68,9 @@ export default function Locations() {
       <section>
         <p>Lista de locatii</p>
         <ul>
-          {allLocations.map(({ id, lat, lon, name, county, region }) => (
+          {locations.map(({ id, name, account_county }) => (
             <li key={id}>
-              <Link href="/localitati/[id]" as={`/localitati/${id}`}>
+              <Link href="/vremea/[slug]/[locationId]" as={`/vremea/localitatea-${name}-judetul-${account_county.name}/${id}`}>
                 <a>{name}</a>
               </Link>
             </li>
@@ -89,7 +91,7 @@ export async function getStaticProps() {
 
   await apolloClient.query({
     query: ALL_LOCATIONS_QUERY,
-    variables: allLocationsQueryVars,
+    variables: locationsQueryVars,
   })
 
   return {

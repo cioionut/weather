@@ -32,14 +32,17 @@ export default function Layout({
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto"  activeKey={router.pathname}>
               <Link href="/" passHref>
-                <Nav.Link>Home</Nav.Link>
+                <Nav.Link>Vremea Acum</Nav.Link>
+              </Link>
+              <Link href="/judete" passHref>
+                <Nav.Link>Judete</Nav.Link>
               </Link>
               <Link href="/localitati" passHref>
-                <Nav.Link>Locatii</Nav.Link>
+                <Nav.Link>Localitati</Nav.Link>
               </Link>
-              <Link href="/about" passHref>
+              {/* <Link href="/about" passHref>
                 <Nav.Link>About</Nav.Link>
-              </Link>
+              </Link> */}
             </Nav>
           </Navbar.Collapse>
         </Navbar>
