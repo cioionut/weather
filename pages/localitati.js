@@ -3,6 +3,7 @@ import { initializeApollo } from '../lib/apolloClient'
 import Head from 'next/head'
 import Link from 'next/link'
 import Layout, { siteTitle } from '../components/layout'
+import { removeDiacritics, replaceSpace } from '../lib/strUtils';
 
 
 export const ALL_LOCATIONS_QUERY = gql`
@@ -68,10 +69,11 @@ export default function Locations() {
       <section>
         <p>Lista de locatii</p>
         <ul>
-          {locations.map(({ id, name, account_county }) => (
-            <li key={id}>
-              <Link href="/vremea/[slug]/[locationId]" as={`/vremea/localitatea-${name}-judetul-${account_county.name}/${id}`}>
-                <a>{name}</a>
+          {locations.map(location => (
+            <li key={location.id}>
+              <Link href="/vremea/[slug]/[locationId]" 
+                as={`/vremea/localitatea-${replaceSpace(removeDiacritics(location.name))}-judetul-${replaceSpace(removeDiacritics(location.account_county.name))}/${location.id}`}>
+                  <a>{location.name}</a>
               </Link>
             </li>
           ))}

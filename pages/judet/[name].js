@@ -2,6 +2,7 @@ import { gql, useQuery, NetworkStatus } from '@apollo/client'
 import { initializeApollo } from '../../lib/apolloClient'
 import Link from 'next/link'
 import Layout from '../../components/layout'
+import { removeDiacritics, replaceSpace } from '../../lib/strUtils';
 
 export const ALL_COUNTY_NAMES_QUERY = gql`
     {
@@ -12,44 +13,37 @@ export const ALL_COUNTY_NAMES_QUERY = gql`
     }
 `;
 export const COUNTY_QUERY = gql`
-    query county($countyName: String!) {
-        county(countyName: $countyName) {
-          id
-          name
-          code
-        }
-        locationsByCounty(countyName: $countyName) {
-          id
-          county_id
-          name
-          account_county {
-            name
-          }
-        }
+  query locationsByCounty($countyName: String!, $orderBy: account_cityOrderBy) {
+    locationsByCounty(countyName: $countyName, orderBy: $orderBy) {
+      id
+      name
+      account_county {
+        id
+        name
+      }
     }
+  }
 `;
 
 
 export default function County({ countyQueryVars }) {
 
-  const { loading, error, data, fetchMore, networkStatus } = useQuery(
+  const { data } = useQuery(
     COUNTY_QUERY,
     {
       variables: countyQueryVars
     }
   )
-  let { county, locationsByCounty } = data 
+  let { locationsByCounty } = data 
   return (
     <Layout>
-        {county.id}
-        <br />
-        <p>Lista de locatii din judetul {county.name}</p>
+        <p>Lista de locatii din judetul {countyQueryVars.countyName}</p>
         <ul>
-          {locationsByCounty.map(({ id, county_id, name, account_county }) => (
-            <li key={id}>
-              <Link href="/vremea/[slug]/[locationId]" as={`/vremea/s/${id}`}>
-              {/* as={`/vremea/localitatea-${name}-judetul-${account_county.name}/${id}`} */}
-                <a>{name} - {county_id}</a>
+          {locationsByCounty.map(location => (
+            <li key={location.id}>
+              <Link href="/vremea/[slug]/[locationId]"
+                as={`/vremea/localitatea-${replaceSpace(removeDiacritics(location.name))}-judetul-${replaceSpace(removeDiacritics(location.account_county.name))}/${location.id}`}>
+                  <a>{location.name}</a>
               </Link>
             </li>
           ))}
@@ -68,7 +62,7 @@ export const getStaticPaths = async () => {
   return {
     paths: counties.map(county => ({
       params: {
-        name: county.name
+        name: replaceSpace(removeDiacritics(county.name))
       }
     })),
     fallback: false
@@ -77,21 +71,24 @@ export const getStaticPaths = async () => {
 
 export async function getStaticProps({ params }) {
   const countyName = params.name;
+  const countyQueryVars = {
+    countyName,
+    orderBy: {
+      "name": "asc"
+    }
+  };
   const apolloClient = initializeApollo()
 
   await apolloClient.query({
     query: COUNTY_QUERY,
-    variables: {
-      countyName: countyName
-    }
-  })
+    variables: countyQueryVars
+  });
+
 
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      countyQueryVars: {
-        countyName: countyName
-      }
+      countyQueryVars,
     },
     revalidate: 1,
   }

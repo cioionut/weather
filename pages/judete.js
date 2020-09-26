@@ -3,22 +3,24 @@ import { initializeApollo } from '../lib/apolloClient'
 import Head from 'next/head'
 import Link from 'next/link'
 import Layout, { siteTitle } from '../components/layout'
+import { removeDiacritics, replaceSpace } from '../lib/strUtils';
 
 
 export const ALL_COUNTIES_QUERY = gql`
-    {
-        counties {
-          id
-          name
-          code
-        }
+  query counties($orderBy: account_countyOrderBy){
+    counties(orderBy: $orderBy) {
+      name
     }
+  }
 `;
 
-export default function Counties() {
+export default function Counties({ allCountiesQueryVars }) {
 
-  const { loading, error, data, fetchMore, networkStatus } = useQuery(
+  const { data } = useQuery(
     ALL_COUNTIES_QUERY,
+    {
+      variables: allCountiesQueryVars
+    }
   )
 
   let { counties } = data
@@ -38,9 +40,9 @@ export default function Counties() {
       <section>
         <p>Lista judetelor</p>
         <ul>
-          {counties.map(({ id, name, code }) => (
+          {counties.map(({ id, name }) => (
             <li key={id}>
-              <Link href="/judet/[name]" as={`/judet/${name}`}>
+              <Link href="/judet/[name]" as={`/judet/${replaceSpace(removeDiacritics(name))}`}>
                 <a>{name}</a>
               </Link>
             </li>
@@ -52,15 +54,22 @@ export default function Counties() {
 }
 
 export async function getStaticProps() {
-  const apolloClient = initializeApollo()
+  const apolloClient = initializeApollo();
+  const allCountiesQueryVars = {
+    orderBy: {
+      "name": "asc"
+    }
+  }
 
   await apolloClient.query({
     query: ALL_COUNTIES_QUERY,
+    variables: allCountiesQueryVars
   })
 
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
+      allCountiesQueryVars
     },
     revalidate: 1,
   }

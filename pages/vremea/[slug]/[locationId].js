@@ -1,11 +1,12 @@
-import { gql, useQuery, NetworkStatus } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { initializeApollo } from '../../../lib/apolloClient'
 import Layout from '../../../components/layout'
+import { removeDiacritics, replaceSpace } from '../../../lib/strUtils';
 
 
 export const LOCATION_QUERY = gql`
   query location($locationId: Int!) {
-    location(cityId: $locationId) {
+    location(locationId: $locationId) {
       id
       county_id
       longitude
@@ -22,21 +23,17 @@ export const LOCATION_QUERY = gql`
 `;
 
 export const ALL_LOCATIONS_QUERY = gql`
-  query locations($skip: Int, $take: Int) {
-    locations(skip: $skip, take: $take) {
-      id
-      
+  {
+    counties {
+      name
+      account_city {
+        id
+        name
+      }
     }
   }
 `;
 
-// name
-      // county_id
-      // account_county {
-      //   id
-      //   name
-      //   code
-      // }
 
 export default function LocationCounty({ locationQueryVars }) {
 
@@ -61,34 +58,40 @@ export default function LocationCounty({ locationQueryVars }) {
 }
 
 export const getStaticPaths = async () => {
-  const apolloClient = initializeApollo()
+  const apolloClient = initializeApollo();
   const { data } = await apolloClient.query({
     query: ALL_LOCATIONS_QUERY
-  })
-  let { locations } = data;
+  });
+  const { counties } = data;
+  let paths = [];
+  counties.forEach(county => {
+    paths = paths.concat(county.account_city.map(location => ({
+        params: {
+          slug: `localitatea-${replaceSpace(removeDiacritics(location.name))}-judetul-${replaceSpace(removeDiacritics(county.name))}`,
+          locationId: `${location.id}`
+        }
+      })));
+  });
+
+  // console.log(paths);
+  // console.log(paths.filter(path => path.params.locationId == "32"))
 
   return {
-    paths: locations.map(location => ({
-      params: {
-        // slug: `localitatea-${location.name}-judetul-${location.account_county.name}`,
-        slug: `s`,
-        locationId: `${location.id}`
-      }
-    })),
+    paths,
     fallback: false
   }
 }
 
 export async function getStaticProps({ params }) {
   const locationId = parseInt(params.locationId);
-  const apolloClient = initializeApollo()
+  const apolloClient = initializeApollo();
 
   await apolloClient.query({
     query: LOCATION_QUERY,
     variables: {
-        locationId
+      locationId
     }
-  })
+  });
 
   return {
     props: {
