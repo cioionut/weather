@@ -46,13 +46,18 @@ export default function LocationCounty({ locationQueryVars }) {
   let { location } = data
   return (
     <Layout>
-        {location.id}
-        <br />
-        {location.name}
-        <br />
-        lat: {location.latitude}, lon: {location.longitude}
-        <br />
-        Judet: {location.account_county.name}, Regiune a tarii: {location.region}
+      <section className="container">
+        <h1>{location.name}</h1>
+          <p>
+            Id: {location.id}
+          </p>
+          <p>
+            <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
+              View on Maps - lat: {location.latitude}, lon: {location.longitude}
+            </a>
+          </p>
+          <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
+      </section>
     </Layout>
   )
 }
