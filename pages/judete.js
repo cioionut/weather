@@ -9,6 +9,7 @@ import { removeDiacritics, replaceSpace } from '../lib/strUtils';
 export const ALL_COUNTIES_QUERY = gql`
   query counties($orderBy: account_countyOrderBy){
     counties(orderBy: $orderBy) {
+      id
       name
     }
   }

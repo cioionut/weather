@@ -1,7 +1,10 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery, from } from '@apollo/client'
 import { initializeApollo } from '../../../lib/apolloClient'
 import Layout from '../../../components/layout'
 import { removeDiacritics, replaceSpace } from '../../../lib/strUtils';
+import { fetcher } from '../../../lib/fetchUtils';
+import useSWR from 'swr';
+import { Container, Row, Col } from 'react-bootstrap';
 
 
 export const LOCATION_QUERY = gql`
@@ -35,29 +38,67 @@ export const ALL_LOCATIONS_QUERY = gql`
 `;
 
 
-export default function LocationCounty({ locationQueryVars }) {
 
-  const { data } = useQuery(
+export default function LocationCountyy({ locationQueryVars }) {
+
+  const { data: gqlData } = useQuery(
     LOCATION_QUERY,
     {
       variables: locationQueryVars
     }
-  )
-  let { location } = data
+  );
+  let { location } = gqlData;
+  const { data: weatherData, error } = useSWR(
+    `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
+  console.log(weatherData, error);
+
+  if (error) return <div>failed to load</div>;
+  if (!weatherData) return <div>loading...</div>;
   return (
     <Layout>
-      <section className="container">
-        <h1>{location.name}</h1>
-          <p>
-            Id: {location.id}
-          </p>
-          <p>
-            <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
-              View on Maps - lat: {location.latitude}, lon: {location.longitude}
-            </a>
-          </p>
+      <Container>
+        <Row>
+          <Col>
+            Vant: {weatherData.current.wind_speed} kph
+          </Col>
+          <Col>
+            Umiditate: {weatherData.current.humidity}%
+          </Col>
+          <Col>
+            Pct. Condensare: {weatherData.current.dew_point}
+          </Col>
+          <Col>
+            Index UV: {weatherData.current.uvi}
+          </Col>
+          <Col>
+            Vizibilitate: {Math.floor(weatherData.current.visibility / 1000)} +km
+          </Col>
+          <Col>
+            Presiune: {weatherData.current.pressure} hPa
+          </Col>
+        </Row>
+        <Row className="justify-content-center mt-5">
+          <h1>{location.name}, {location.account_county.name}</h1>
+        </Row>
+        <Row className="justify-content-center">
+          <Col md="auto">
+            <img src={`http://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}></img>
+          </Col>
+          <Col md="auto">
+            <h2>{Math.floor(weatherData.current.temp)}{String.fromCharCode(176)}</h2>
+          </Col>
+        </Row>
+
+        <Row>
+          <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
+            View on Maps - lat: {location.latitude}, lon: {location.longitude}
+          </a>
+        </Row>
+        <Row>
           <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
-      </section>
+        </Row>
+      </Container>
+
     </Layout>
   )
 }

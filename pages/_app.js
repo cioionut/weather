@@ -1,4 +1,5 @@
-import 'bootstrap/dist/css/bootstrap.min.css'; // todo: apparently exist a better way to import this 'withCSS'?maybe
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 import { ApolloProvider } from '@apollo/client'
 import { useApollo } from '../lib/apolloClient'
