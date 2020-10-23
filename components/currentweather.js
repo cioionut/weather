@@ -7,7 +7,7 @@ export default function CurrentWeather(props) {
       <>
         <Row className="justify-content-center">
           <Col md="auto">
-            <img src={`http://openweathermap.org/img/wn/${props.weatherData.current.weather[0].icon}@2x.png`}></img>
+            <img src={`https://openweathermap.org/img/wn/${props.weatherData.current.weather[0].icon}@2x.png`}></img>
             {/* <iframe aria-label="weather icon" role="img" sandbox=""
               frameBorder="0"
               src={`data:text/html,<style>body{background:url('http://openweathermap.org/img/wn/${props.weatherData.current.weather[0].icon}@2x.png') center/cover no-repeat;padding:0;margin:0;overflow:hidden}</style>`}>
