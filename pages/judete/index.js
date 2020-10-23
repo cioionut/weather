@@ -1,9 +1,10 @@
 import { gql, useQuery, NetworkStatus } from '@apollo/client'
-import { initializeApollo } from '../lib/apolloClient'
+import { initializeApollo } from '../../lib/apolloClient'
 import Head from 'next/head'
 import Link from 'next/link'
-import Layout, { siteTitle } from '../components/layout'
-import { removeDiacritics, replaceSpace } from '../lib/strUtils';
+import Layout, { siteTitle } from '../../components/layout'
+import { removeDiacritics, replaceSpace } from '../../lib/strUtils';
+import { Container, Row } from 'react-bootstrap';
 
 
 export const ALL_COUNTIES_QUERY = gql`
@@ -38,18 +39,22 @@ export default function Counties({ allCountiesQueryVars }) {
             content="Lista locatii"
         />
       </Head>
-      <section>
-        <p>Lista judetelor</p>
-        <ul>
-          {counties.map(({ id, name }) => (
-            <li key={id}>
-              <Link href="/judet/[name]" as={`/judet/${replaceSpace(removeDiacritics(name))}`}>
-                <a>{name}</a>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <Container>
+        <Row className="justify-content-center">
+          <h3>Judetele din Romania</h3>
+        </Row>
+        <Row className="justify-content-center">
+          <ul>
+              {counties.map(({ id, name }) => (
+                <li key={id}>
+                  <Link href="/judet/[name]" as={`/judet/${replaceSpace(removeDiacritics(name))}`}>
+                    <a>{name}</a>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+        </Row>
+      </Container>
     </Layout>
   )
 }

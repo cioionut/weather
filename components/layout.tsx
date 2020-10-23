@@ -37,9 +37,9 @@ export default function Layout({
               <Link href="/judete" passHref>
                 <Nav.Link>Judete</Nav.Link>
               </Link>
-              <Link href="/localitati" passHref>
+              {/* <Link href="/localitati" passHref>
                 <Nav.Link>Localitati</Nav.Link>
-              </Link>
+              </Link> */}
               {/* <Link href="/about" passHref>
                 <Nav.Link>About</Nav.Link>
               </Link> */}

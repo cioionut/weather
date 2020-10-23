@@ -1,10 +1,13 @@
 import { gql, useQuery, from } from '@apollo/client'
 import { initializeApollo } from '../../../lib/apolloClient'
-import Layout from '../../../components/layout'
 import { removeDiacritics, replaceSpace } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
 import useSWR from 'swr';
 import { Container, Row, Col } from 'react-bootstrap';
+
+import Layout from '../../../components/layout';
+import CurrentWeather from '../../../components/currentweather'
+import DailyWeather from '../../../components/dailyweather'
 
 
 export const LOCATION_QUERY = gql`
@@ -48,9 +51,20 @@ export default function LocationCountyy({ locationQueryVars }) {
     }
   );
   let { location } = gqlData;
-  const { data: weatherData, error } = useSWR(
-    `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
-  console.log(weatherData, error);
+  const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
+  const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+  let url = new URL(`${openweatherApiUrl}/onecall`);
+  let queryParams = {
+    lat: location.latitude, 
+    lon: location.longitude, 
+    lang: 'ro',
+    appid: openweatherApiKey,
+    units: 'metric',
+    exclude: 'minutely'
+  };
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
+  const { data: weatherData, error } = useSWR(url, fetcher);
+  // console.log(weatherData, error);
 
   if (error) return <div>failed to load</div>;
   if (!weatherData) return <div>loading...</div>;
@@ -65,8 +79,11 @@ export default function LocationCountyy({ locationQueryVars }) {
             Umiditate: {weatherData.current.humidity}%
           </Col>
           <Col>
-            Pct. Condensare: {weatherData.current.dew_point}
+            Nori: {weatherData.current.clouds}%
           </Col>
+          {/* <Col>
+            Pct. Condensare: {weatherData.current.dew_point}
+          </Col> */}
           <Col>
             Index UV: {weatherData.current.uvi}
           </Col>
@@ -77,18 +94,11 @@ export default function LocationCountyy({ locationQueryVars }) {
             Presiune: {weatherData.current.pressure} hPa
           </Col>
         </Row>
-        <Row className="justify-content-center mt-5">
+        <Row className="justify-content-center mt-5 mb-3">
           <h1>{location.name}, {location.account_county.name}</h1>
         </Row>
-        <Row className="justify-content-center">
-          <Col md="auto">
-            <img src={`http://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}></img>
-          </Col>
-          <Col md="auto">
-            <h2>{Math.floor(weatherData.current.temp)}{String.fromCharCode(176)}</h2>
-          </Col>
-        </Row>
-
+        <CurrentWeather weatherData={weatherData} />
+        <DailyWeather daily={weatherData.daily} />
         <Row>
           <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
             View on Maps - lat: {location.latitude}, lon: {location.longitude}

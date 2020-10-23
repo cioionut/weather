@@ -3,6 +3,8 @@ import { initializeApollo } from '../../lib/apolloClient'
 import Link from 'next/link'
 import Layout from '../../components/layout'
 import { removeDiacritics, replaceSpace } from '../../lib/strUtils';
+import { Container, Row } from 'react-bootstrap';
+
 
 export const ALL_COUNTY_NAMES_QUERY = gql`
     {
@@ -37,17 +39,23 @@ export default function County({ countyQueryVars }) {
   let { locationsByCounty } = data 
   return (
     <Layout>
-        <p>Lista de locatii din judetul {countyQueryVars.countyName}</p>
-        <ul>
-          {locationsByCounty.map(location => (
-            <li key={location.id}>
-              <Link href="/vremea/[slug]/[locationId]"
-                as={`/vremea/localitatea-${replaceSpace(removeDiacritics(location.name))}-judetul-${replaceSpace(removeDiacritics(location.account_county.name))}/${location.id}`}>
-                  <a>{location.name}</a>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <Container>
+        <Row className="justify-content-center">
+          <h3>Localitatile din judetul {countyQueryVars.countyName}</h3>
+        </Row>
+        <Row className="justify-content-center">
+          <ul>
+            {locationsByCounty.map(location => (
+              <li key={location.id}>
+                <Link href="/vremea/[slug]/[locationId]"
+                  as={`/vremea/localitatea-${replaceSpace(removeDiacritics(location.name))}-judetul-${replaceSpace(removeDiacritics(location.account_county.name))}/${location.id}`}>
+                    <a>{location.name}</a>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Row>
+      </Container>
     </Layout>
   )
 }
