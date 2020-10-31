@@ -8,39 +8,46 @@ export default function DailyWeather(props) {
   const listDaily = daily.map((dweather, index) => {
   const dateTime = new Date(dweather.dt * 1000);
   let dateTimeDisp = `${rodays[dateTime.getDay()]} - ${dateTime.getDate()} ${romonths[dateTime.getMonth()]} ${dateTime.getFullYear()}`
-  if (index == 0)
-      dateTimeDisp = `Astazi, ${dateTimeDisp}`
+  let dayNameDisp = `${rodays[dateTime.getDay()]}`
+
+  if (index == 0) {
+    dateTimeDisp = `Astazi, ${dateTimeDisp}`
+    dayNameDisp = "Astazi"
+  }
+
   return (
-      <div key={index}>
-        <Accordion.Toggle as={Row} eventKey={`${index}`}>
+      <a key={index}>
+        <Accordion.Toggle as={Row} eventKey={`${index}`} className="mt-3">
           <Col xs="auto">
             <Row className="justify-content-center">
-              <img src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`} height="60px"></img>
-            </Row>
-            <Row className="justify-content-center">
-              <TempDegree value={dweather.temp.max}/>/<TempDegree value={dweather.temp.min}/>
+              <img src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`} height="50px"></img>
             </Row>
           </Col>
           <Col>
-            <Row style={{ fontWeight: '430', fontSize: '1.3em' }}>
-              <Col>{dateTimeDisp}</Col>
-            </Row>
             <Row>
-              <Col><span style={{ fontWeight: '300' }}>Precipitatii:</span> {dweather.pop}%</Col>
-              <Col><span style={{ fontWeight: '300' }}>Umiditate:</span> {dweather.humidity}% </Col>
-              <Col><span style={{ fontWeight: '300' }}>Vant:</span> {dweather.wind_speed}kph</Col>
+              <Col xs="auto" style={{ fontWeight: '430', fontSize: '1.3em' }}>{dayNameDisp}</Col>
+              <Col style={{ fontWeight: '350', fontSize: '1.3em' }}>
+                <TempDegree value={dweather.temp.max}/>/<TempDegree value={dweather.temp.min}/>
+              </Col>
             </Row>
           </Col>
         </Accordion.Toggle>
         <Accordion.Collapse eventKey={`${index}`}>
-          <Row className="justify-content-center">
-            <TempDegree value={dweather.temp.morn}/>
-            <TempDegree value={dweather.temp.day}/>
-            <TempDegree value={dweather.temp.eve}/>
-            <TempDegree value={dweather.temp.night}/>
+          <Row>
+            <Col md={{ offset: 1 }}><span style={{ fontWeight: '300' }}>Precipitatii:</span> {dweather.pop}%</Col>
+            <Col><span style={{ fontWeight: '300' }}>Umiditate:</span> {dweather.humidity}% </Col>
+            <Col><span style={{ fontWeight: '300' }}>Vant:</span> {dweather.wind_speed}kph</Col>
+            {/* <Col md={{ span: 1, offset: 1 }}>
+              <TempDegree value={dweather.temp.morn}/>
+            </Col>
+            <Col>
+              <TempDegree value={dweather.temp.day}/>
+              <TempDegree value={dweather.temp.eve}/>
+              <TempDegree value={dweather.temp.night}/>
+            </Col> */}
           </Row>
         </Accordion.Collapse>
-      </div>
+      </a>
     )
   });
   return (

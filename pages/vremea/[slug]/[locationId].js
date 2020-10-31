@@ -52,7 +52,7 @@ export default function LocationCountyy({ locationQueryVars }) {
   );
   let { location } = gqlData;
 
-  // get weather
+  // // get weather
   // const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
   // const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
   // let url = new URL(`${openweatherApiUrl}/onecall`);
@@ -69,6 +69,8 @@ export default function LocationCountyy({ locationQueryVars }) {
 
   const { data: weatherData, error } = useSWR(
     `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
+  
+  // // debug logs
   // console.log(weatherData, error);
 
   if (error) return <div>failed to load</div>;
