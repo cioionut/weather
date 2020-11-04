@@ -2,7 +2,7 @@ import { gql, useQuery, NetworkStatus } from '@apollo/client'
 import { initializeApollo } from '../../lib/apolloClient'
 import Link from 'next/link'
 import Layout from '../../components/layout'
-import { removeDiacritics, replaceSpace } from '../../lib/strUtils';
+import { formatForURL } from '../../lib/strUtils';
 import { Container, Row } from 'react-bootstrap';
 
 
@@ -36,19 +36,22 @@ export default function County({ countyQueryVars }) {
       variables: countyQueryVars
     }
   )
-  let { locationsByCounty } = data 
+  let { locationsByCounty } = data;
+  let countyName = countyQueryVars.countyName;
+  if (locationsByCounty && locationsByCounty.length > 0)
+    countyName = locationsByCounty[0].account_county.name;
   return (
     <Layout>
       <Container>
         <Row className="justify-content-center">
-          <h3>Localitatile din judetul {countyQueryVars.countyName}</h3>
+          <h3>Localitatile din judetul {countyName}</h3>
         </Row>
         <Row className="justify-content-center">
           <ul>
             {locationsByCounty.map(location => (
               <li key={location.id}>
                 <Link href="/vremea/[slug]/[locationId]"
-                  as={`/vremea/localitatea-${replaceSpace(removeDiacritics(location.name))}-judetul-${replaceSpace(removeDiacritics(location.account_county.name))}/${location.id}`}>
+                  as={`/vremea/localitatea-${formatForURL(location.name)}-judetul-${formatForURL(location.account_county.name)}/${location.id}`}>
                     <a>{location.name}</a>
                 </Link>
               </li>
@@ -70,7 +73,7 @@ export const getStaticPaths = async () => {
   return {
     paths: counties.map(county => ({
       params: {
-        name: replaceSpace(removeDiacritics(county.name))
+        name: formatForURL(county.name)
       }
     })),
     fallback: false

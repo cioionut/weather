@@ -3,7 +3,7 @@ import { initializeApollo } from '../../lib/apolloClient'
 import Head from 'next/head'
 import Link from 'next/link'
 import Layout, { siteTitle } from '../../components/layout'
-import { removeDiacritics, replaceSpace } from '../../lib/strUtils';
+import { formatForURL } from '../../lib/strUtils';
 import { Container, Row } from 'react-bootstrap';
 
 
@@ -47,7 +47,7 @@ export default function Counties({ allCountiesQueryVars }) {
           <ul>
               {counties.map(({ id, name }) => (
                 <li key={id}>
-                  <Link href="/judet/[name]" as={`/judet/${replaceSpace(removeDiacritics(name))}`}>
+                  <Link href="/judet/[name]" as={`/judet/${formatForURL(name)}`}>
                     <a>{name}</a>
                   </Link>
                 </li>

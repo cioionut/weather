@@ -5,3 +5,7 @@ export const removeDiacritics = (str: String) => {
 export const replaceSpace = (str: String, delim='-') => {
     return str.replace(/ /g, delim);
 }
+
+export const formatForURL = (str: String, delim='-') => {
+    return replaceSpace(removeDiacritics(str), delim).toLowerCase();
+}
