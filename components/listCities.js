@@ -1,26 +1,28 @@
 import Link from 'next/link'
-import { Row, Col, Container, ListGroup } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import { formatForURL } from '../lib/strUtils';
-import cities from '../data/mmajor_ro_cities'
+import styles from '../styles/global.module.css';
 
 
 export default function ListCities(props) {
-  let citiesIn = cities.map((location, index) => {
+  let citiesIn = props.cities.map((location, index) => {
     return (
-      <Row key={index}>
+      <Col key={index} className="mx-sm-auto">
         <Link href="/vremea/[slug]/[locationId]"
           as={`/vremea/localitatea-${formatForURL(location.name)}-judetul-${formatForURL(location.account_county.name)}/${location.id}`}>
             <a>{location.name}</a>
         </Link>
-      </Row>
+      </Col>
     )
   })
   return (
-    <Container>
-      <Row>
-        Meteo in Romania
+    <Container fluid>
+      <Row className={`flex-nowrap flex-sm-wrap ${styles.mobileRow}`}>
+        <Col>
+          Meteo in Romania
+        </Col>
+        {citiesIn}
       </Row>
-      {citiesIn}
     </Container>
   )
 }

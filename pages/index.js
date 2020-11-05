@@ -10,7 +10,7 @@ import Layout, { siteTitle } from '../components/layout'
 import CurrentWeather from '../components/currentweather'
 import DailyWeather from '../components/dailyweather'
 import ListCities from '../components/listCities'
-import cities from '../data/mmajor_ro_cities'
+import roMajorCities from '../data/mmajor_ro_cities'
 
 
 export const LOCATIONSBYIDS_QUERY = gql`
@@ -32,7 +32,7 @@ export const LOCATIONSBYIDS_QUERY = gql`
 `;
 
 
-export default function Home({ locationQueryVars }) {
+export default function Home({ locationQueryVars, roMajorCities }) {
   const { data: gqlData } = useQuery(
     LOCATIONSBYIDS_QUERY,
     {
@@ -40,7 +40,7 @@ export default function Home({ locationQueryVars }) {
     }
   );
   let { locationsByIds } = gqlData;
-  const location = locationsByIds.filter((location) => location.id == 2715)[0]; // Bucuresti default
+  const location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
 
   // // get weather
   // const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
@@ -80,12 +80,14 @@ export default function Home({ locationQueryVars }) {
       </Head>
       <Container fluid>
         <Row>
-          <Col xs={1} md={1}>
-            <ListCities cities={locationsByIds}/>
+          <Col xs={12} md={1}>
+            <ListCities cities={roMajorCities}/>
           </Col>
           <Col>
-            <Row className="justify-content-center mt-5 mb-3">
-              <h2>{location.name}, {location.account_county.name}</h2>
+            <Row>
+              <Col className="text-center mt-4 mb-3">
+                <h2>{location.name}, {location.account_county.name}</h2>
+              </Col>
             </Row>
             <CurrentWeather weatherData={weatherData}/>
             <DailyWeather daily={weatherData.daily} />
@@ -105,7 +107,7 @@ export default function Home({ locationQueryVars }) {
 }
 
 export async function getStaticProps({ params }) {
-  const locationsIds = cities.map(city => city.id);
+  const locationsIds = roMajorCities.map(city => city.id);
   const apolloClient = initializeApollo();
   const queryVars = {
     ids: locationsIds,
@@ -122,7 +124,8 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      locationQueryVars: queryVars
+      locationQueryVars: queryVars,
+      roMajorCities
     },
     revalidate: 1,
   }

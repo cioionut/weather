@@ -1,19 +1,36 @@
 import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/weather.module.css'
+import gstyles from '../styles/global.module.css';
+import TempDegree from './tempdegree';
+import WeatherStatPair from './weatherstatpair';
 
 
 export default function CurrentWeather(props) {
   let weatherData = props.weatherData;
   return (
     <Container>
-      <Row style={{ fontWeight: '300' }}>
-        <Col>Vant: <span style={{ fontWeight: '400' }}>{Math.floor(weatherData.current.wind_speed*3.6)} kph</span></Col>
-        <Col>Umiditate: <span style={{ fontWeight: '400' }}>{weatherData.current.humidity}%</span></Col>
-        <Col>Nori: <span style={{ fontWeight: '400' }}>{weatherData.current.clouds}%</span></Col>
-        {/* <Col>Pct. Condensare(de roua): {weatherData.current.dew_point}</Col> */}
-        <Col>Index UV: <span style={{ fontWeight: '400' }}>{weatherData.current.uvi}</span></Col>
-        <Col>Vizibilitate: <span style={{ fontWeight: '400' }}>{Math.floor(weatherData.current.visibility / 1000)} +km</span></Col>
-        {/* <Col>Presiune: {weatherData.current.pressure} hPa</Col> */}
+      <Row className={`flex-nowrap flex-sm-wrap ${gstyles.mobileRow}`}>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Vant' value={Math.floor(weatherData.current.wind_speed*3.6)} um='kph' />
+        </Col>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Umiditate' value={Math.floor(weatherData.current.humidity)} um='%' />
+        </Col>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Nori' value={Math.floor(weatherData.current.clouds)} um='%' />
+        </Col>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Index UV' value={Math.floor(weatherData.current.uvi)} />
+        </Col>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Vizibilitate' value={Math.floor(weatherData.current.visibility / 1000)} um='+km' />
+        </Col>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Pct. roua' value={<TempDegree value={weatherData.current.dew_point}/>} />
+        </Col>
+        <Col md='auto' ms='auto' xs='auto' >
+          <WeatherStatPair pkey='Presiune' value={Math.floor(weatherData.current.pressure)} um='hPa' />
+        </Col>
       </Row>
       <Row className="justify-content-center">
         <Col md="auto" ms="auto" xs="auto">
@@ -21,7 +38,7 @@ export default function CurrentWeather(props) {
         </Col>
         <Col md="auto" ms="auto" xs="auto">
           <Row className={styles.mainTempFont}>
-            {Math.floor(weatherData.current.temp)}{String.fromCharCode(176)} - {weatherData.current.weather[0].description}
+            <TempDegree value={weatherData.current.temp}/> - {weatherData.current.weather[0].description}
           </Row>
           <Row style={{ fontSize: '1.3em' }}>
             <p>
