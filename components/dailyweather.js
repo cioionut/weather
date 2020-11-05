@@ -1,6 +1,8 @@
 import { Row, Table, Accordion, ListGroup, Col } from 'react-bootstrap';
 import TempDegree from './tempdegree';
 import { rodays, romonths } from '../lib/constants';
+import ContextAwareToggle from './contextawaretoggle';
+import styles from '../styles/dailyweather.module.css';
 
 
 export default function DailyWeather(props) {
@@ -16,20 +18,17 @@ export default function DailyWeather(props) {
     }
 
     return (
-        <a key={index}>
-          <Accordion.Toggle as={Row} eventKey={`${index}`} className="mt-3">
-            <Col xs="auto">
-              <Row className="justify-content-center">
-                <img src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`} height="50px"></img>
-              </Row>
+        <div key={index}>
+          <Accordion.Toggle as={Row} eventKey={`${index}`} className={`mt-1 ${styles.togleRow}`}>
+            <Col md={1} sm={3} xs={3}>
+              <img src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`} height='55px'></img>
             </Col>
-            <Col>
-              <Row>
-                <Col xs="auto" style={{ fontWeight: '430', fontSize: '1.3em' }}>{dayNameDisp}</Col>
-                <Col style={{ fontWeight: '350', fontSize: '1.3em' }}>
-                  <TempDegree value={dweather.temp.max}/>/<TempDegree value={dweather.temp.min}/>
-                </Col>
-              </Row>
+            <Col md={2} xs={4} className='pt-2' style={{ fontWeight: '430', fontSize: '1.3em' }}>{dayNameDisp}</Col>
+            <Col className='pt-2' style={{ fontWeight: '350', fontSize: '1.3em' }}>
+              <TempDegree value={dweather.temp.max}/>/<TempDegree value={dweather.temp.min}/>
+            </Col>
+            <Col xs={1}  className='pt-2 justify-content-end'>
+              <ContextAwareToggle eventKey={`${index}`} />
             </Col>
           </Accordion.Toggle>
           <Accordion.Collapse eventKey={`${index}`}>
@@ -45,18 +44,18 @@ export default function DailyWeather(props) {
                 <TempDegree value={dweather.temp.eve}/>
                 <TempDegree value={dweather.temp.night}/>
               </Col> */}
+              <hr/>
             </Row>
           </Accordion.Collapse>
-        </a>
+        </div>
       )
   });
   return (
     <>
-      <Row>
-        <Accordion defaultActiveKey="0" className="container">
-          {listDaily}
-        </Accordion>
-      </Row>
+      <Accordion defaultActiveKey="0" className="container">
+        <hr/>
+        {listDaily}
+      </Accordion>
     </>
   )
 }

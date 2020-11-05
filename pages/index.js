@@ -86,22 +86,33 @@ export default function Home({ locationQueryVars, roMajorCities }) {
           </Col>
           <Col>
             <Row>
-              <Col className="text-center mt-4 mb-3">
-                <h2>{location.name}, {location.account_county.name}</h2>
+              <Col className="text-center mt-2">
+                <h3>{location.name}, {location.account_county.name}</h3>
               </Col>
             </Row>
-            <CurrentWeather weatherData={weatherData}/>
-            <DailyWeather daily={weatherData.daily} />
             <Row>
-              <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
-                View on Maps - lat: {location.latitude}, lon: {location.longitude}
-              </a>
-            </Row>
-            <Row>
-              <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
-            </Row>
+              <Col>
+                <CurrentWeather weatherData={weatherData}/>
               </Col>
             </Row>
+            <Row>
+              <Col>
+                <DailyWeather daily={weatherData.daily} />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Container>
+                  <hr/>
+                  <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
+                    Locatia pe harta
+                  </a>
+                  <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
+                </Container>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       </Container>
     </Layout>
   )

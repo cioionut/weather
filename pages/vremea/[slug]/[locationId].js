@@ -74,22 +74,38 @@ export default function LocationCounty({ locationQueryVars }) {
   if (!weatherData) return <div>loading...</div>;
   return (
     <Layout>
-      <Container>
-        <Row className="justify-content-center mt-5 mb-3">
-          <h1>{location.name}, {location.account_county.name}</h1>
-        </Row>
-        <CurrentWeather weatherData={weatherData} location={location}/>
-        <DailyWeather daily={weatherData.daily} />
+      <Container fluid>
         <Row>
-          <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
-            View on Maps - lat: {location.latitude}, lon: {location.longitude}
-          </a>
-        </Row>
-        <Row>
-          <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
+          <Col>
+            <Row>
+              <Col className="text-center mt-2">
+                <h3>{location.name}, {location.account_county.name}</h3>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <CurrentWeather weatherData={weatherData}/>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <DailyWeather daily={weatherData.daily} />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Container>
+                  <hr/>
+                  <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
+                    Locatia pe harta
+                  </a>
+                  <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
+                </Container>
+              </Col>
+            </Row>
+          </Col>
         </Row>
       </Container>
-
     </Layout>
   )
 }

@@ -1,0 +1,7 @@
+.togleRow {
+    cursor: pointer;
+}
+.togleRow:hover {
+    background-color: #F8F8F8;
+    cursor: pointer;
+}
