@@ -1,9 +1,9 @@
-import { gql, useQuery, from } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { initializeApollo } from '../../../lib/apolloClient'
 import { formatForURL } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
 import useSWR from 'swr';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Spinner } from 'react-bootstrap';
 
 import Layout from '../../../components/layout';
 import CurrentWeather from '../../../components/currentweather'
@@ -71,7 +71,6 @@ export default function LocationCounty({ locationQueryVars }) {
   //   `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
   
   if (error) return <div>failed to load</div>;
-  if (!weatherData) return <div>loading...</div>;
   return (
     <Layout>
       <Container fluid>
@@ -79,19 +78,30 @@ export default function LocationCounty({ locationQueryVars }) {
           <Col>
             <Row>
               <Col className="text-center mt-2">
-                <h3>{location.name}, {location.account_county.name}</h3>
+                <h1>{location.name}, {location.account_county.name}</h1>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <CurrentWeather weatherData={weatherData}/>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <DailyWeather daily={weatherData.daily} />
-              </Col>
-            </Row>
+            {weatherData
+              ?
+              <>
+                <Row>
+                  <Col>
+                    <CurrentWeather weatherData={weatherData}/>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <DailyWeather daily={weatherData.daily} />
+                  </Col>
+                </Row>
+              </>
+              : 
+              <Row className="justify-content-center">
+                <Spinner animation="border" role="status">
+                  <span className="sr-only">Loading...</span>
+                </Spinner>
+              </Row>
+            }
             <Row>
               <Col>
                 <Container>

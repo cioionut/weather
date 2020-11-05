@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Container, Row, Col, ListGroup } from 'react-bootstrap'
+import { Container, Row, Col, Spinner } from 'react-bootstrap'
 import { gql, useQuery } from '@apollo/client'
 import { initializeApollo } from '../lib/apolloClient'
 import useSWR from 'swr';
@@ -64,7 +64,6 @@ export default function Home({ locationQueryVars, roMajorCities }) {
   // console.log(weatherData, error);
 
   if (error) return <div>failed to load</div>;
-  if (!weatherData) return <div>loading...</div>;
 
   return (
     <Layout home>
@@ -87,19 +86,30 @@ export default function Home({ locationQueryVars, roMajorCities }) {
           <Col>
             <Row>
               <Col className="text-center mt-2">
-                <h3>{location.name}, {location.account_county.name}</h3>
+                <h1>{location.name}, {location.account_county.name}</h1>
               </Col>
             </Row>
-            <Row>
-              <Col>
-                <CurrentWeather weatherData={weatherData}/>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <DailyWeather daily={weatherData.daily} />
-              </Col>
-            </Row>
+            {weatherData
+              ?
+              <>
+                <Row>
+                  <Col>
+                    <CurrentWeather weatherData={weatherData}/>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <DailyWeather daily={weatherData.daily} />
+                  </Col>
+                </Row>
+              </>
+              : 
+              <Row className="justify-content-center">
+                <Spinner animation="border" role="status">
+                  <span className="sr-only">Loading...</span>
+                </Spinner>
+              </Row>
+            }
             <Row>
               <Col>
                 <Container>
