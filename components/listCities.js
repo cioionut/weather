@@ -7,7 +7,7 @@ import styles from '../styles/global.module.css';
 export default function ListCities(props) {
   let citiesIn = props.cities.map((location, index) => {
     return (
-      <Col key={index} className="mx-sm-auto">
+      <Col md="auto" ms="auto" xs="auto" key={index}>
         <Link href="/vremea/[slug]/[locationId]"
           as={`/vremea/localitatea-${formatForURL(location.name)}-judetul-${formatForURL(location.account_county.name)}/${location.id}`}>
             <a>{location.name}</a>
@@ -18,9 +18,6 @@ export default function ListCities(props) {
   return (
     <Container fluid>
       <Row className={`flex-nowrap flex-sm-wrap ${styles.mobileRow}`}>
-        <Col>
-          Meteo in Romania
-        </Col>
         {citiesIn}
       </Row>
     </Container>

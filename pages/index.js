@@ -81,6 +81,7 @@ export default function Home({ locationQueryVars, roMajorCities }) {
       <Container fluid>
         <Row>
           <Col xs={12} md={1}>
+            Meteo in Romania
             <ListCities cities={roMajorCities}/>
           </Col>
           <Col>

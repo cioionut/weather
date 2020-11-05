@@ -7,30 +7,25 @@ import WeatherStatPair from './weatherstatpair';
 
 export default function CurrentWeather(props) {
   let weatherData = props.weatherData;
+  const weatherStatPairs = [
+    { pkey: 'Vant', value: Math.floor(weatherData.current.wind_speed*3.6), um: 'kph' },
+    { pkey: 'Umiditate', value: Math.floor(weatherData.current.humidity), um: '%' },
+    { pkey: 'Nori', value: Math.floor(weatherData.current.clouds), um: '%' },
+    { pkey: 'Index UV', value: Math.floor(weatherData.current.uvi) },
+    { pkey: 'Vizibilitate', value: Math.floor(weatherData.current.visibility/1000), um: '+km' },
+    { pkey: 'Pct. roua', value: <TempDegree value={weatherData.current.dew_point}/> },
+    { pkey: 'Presiune', value: Math.floor(weatherData.current.pressure), um: 'hPa' },
+  ].map((obj, index) => {
+    return (
+      <Col md="auto" ms="auto" xs="auto" key={index}>
+        <WeatherStatPair pkey={obj.pkey} value={obj.value} um={obj.um} />
+      </Col>
+    )
+  })
   return (
     <Container>
       <Row className={`flex-nowrap flex-sm-wrap ${gstyles.mobileRow}`}>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Vant' value={Math.floor(weatherData.current.wind_speed*3.6)} um='kph' />
-        </Col>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Umiditate' value={Math.floor(weatherData.current.humidity)} um='%' />
-        </Col>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Nori' value={Math.floor(weatherData.current.clouds)} um='%' />
-        </Col>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Index UV' value={Math.floor(weatherData.current.uvi)} />
-        </Col>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Vizibilitate' value={Math.floor(weatherData.current.visibility / 1000)} um='+km' />
-        </Col>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Pct. roua' value={<TempDegree value={weatherData.current.dew_point}/>} />
-        </Col>
-        <Col md='auto' ms='auto' xs='auto' >
-          <WeatherStatPair pkey='Presiune' value={Math.floor(weatherData.current.pressure)} um='hPa' />
-        </Col>
+        {weatherStatPairs}
       </Row>
       <Row className="justify-content-center">
         <Col md="auto" ms="auto" xs="auto">
