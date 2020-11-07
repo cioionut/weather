@@ -53,23 +53,23 @@ export default function LocationCounty({ locationQueryVars }) {
   );
   let { location } = gqlData;
 
-  // // get weather
-  // const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
-  // const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  // let url = new URL(`${openweatherApiUrl}/onecall`);
-  // let queryParams = {
-  //   lat: location.latitude, 
-  //   lon: location.longitude, 
-  //   lang: 'ro',
-  //   appid: openweatherApiKey,
-  //   units: 'metric',
-  //   exclude: 'minutely'
-  // };
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(url, fetcher);
+  // get weather
+  const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
+  const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+  let url = new URL(`${openweatherApiUrl}/onecall`);
+  let queryParams = {
+    lat: location.latitude, 
+    lon: location.longitude, 
+    lang: 'ro',
+    appid: openweatherApiKey,
+    units: 'metric',
+    exclude: 'minutely'
+  };
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
+  const { data: weatherData, error } = useSWR(url, fetcher);
 
-  const { data: weatherData, error } = useSWR(
-    `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
+  // const { data: weatherData, error } = useSWR(
+  //   `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
   
   
   const title = `Vremea in ${location.name}, judetul ${location.account_county.name}`

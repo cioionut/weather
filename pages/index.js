@@ -55,7 +55,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
   
   // // debug logs
   // console.log(weatherData, error);
-  const title = `Vremea in Romania - Prognoza buletin meteo 10 zile`
+  const title = `Vremea in Romania - Prognoza meteo pe 10 zile`
   return (
     <Layout home>
       <Head>
@@ -73,7 +73,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           <Col>
             <h1>Vezi cum va fi vremea in urmatoarele 7 zile</h1>
             <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p>
-            <h2>Starea vremii in {location.name}, judetul {location.account_county.name}</h2>
+            <h2 className="text-center">Starea vremii in {location.name}, judetul {location.account_county.name}</h2>
           </Col>          
         </Row>
         {(weatherData && !error)
