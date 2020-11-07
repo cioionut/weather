@@ -1,8 +1,8 @@
-import { gql, useQuery, NetworkStatus } from '@apollo/client'
-import { initializeApollo } from '../../lib/apolloClient'
+import { gql, useQuery } from '@apollo/client'
+import { initializeApollo } from '../../../lib/apolloClient'
 import Link from 'next/link'
-import Layout from '../../components/layout'
-import { formatForURL } from '../../lib/strUtils';
+import Layout from '../../../components/layout'
+import { formatForURL } from '../../../lib/strUtils';
 import { Container, Row } from 'react-bootstrap';
 
 
@@ -50,9 +50,8 @@ export default function County({ countyQueryVars }) {
           <ul>
             {locationsByCounty.map(location => (
               <li key={location.id}>
-                <Link href="/vremea/[slug]/[locationId]"
-                  as={`/vremea/localitatea-${formatForURL(location.name)}-judetul-${formatForURL(location.account_county.name)}/${location.id}`}>
-                    <a>{location.name}</a>
+                <Link href={`/vremea/${formatForURL(location.name)}-${formatForURL(location.account_county.name)}/${location.id}`}>
+                {location.name}
                 </Link>
               </li>
             ))}
@@ -73,7 +72,7 @@ export const getStaticPaths = async () => {
   return {
     paths: counties.map(county => ({
       params: {
-        name: formatForURL(county.name)
+        slug: formatForURL(county.name)
       }
     })),
     fallback: false
@@ -81,7 +80,7 @@ export const getStaticPaths = async () => {
 }
 
 export async function getStaticProps({ params }) {
-  const countyName = params.name;
+  const countyName = params.slug;
   const countyQueryVars = {
     countyName,
     orderBy: {

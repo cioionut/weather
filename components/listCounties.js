@@ -4,12 +4,12 @@ import { formatForURL } from '../lib/strUtils';
 import styles from '../styles/mobile.module.css';
 
 
-export default function ListCities(props) {
-  let citiesIn = props.cities.map((location, index) => {
+export default function ListCounties(props) {
+  let counties = props.counties.map((county, index) => {
     return (
       <Col md={3} ms="auto" xs="auto" key={index}>
-        <Link href={`/vremea/${formatForURL(location.name)}-${formatForURL(location.account_county.name)}/${location.id}`}>
-          {location.name}
+        <Link href={`/vremea/${formatForURL(county.name)}`}>
+          {county.name}
         </Link>
       </Col>
     )
@@ -17,7 +17,7 @@ export default function ListCities(props) {
   return (
     <Container fluid>
       <Row className={`flex-nowrap flex-sm-wrap ${styles.mobileRow}`}>
-        {citiesIn}
+        {counties}
       </Row>
     </Container>
   )

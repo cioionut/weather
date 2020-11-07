@@ -27,7 +27,7 @@ export default function DailyWeather(props) {
             <Col className='pt-2' style={{ fontWeight: '350', fontSize: '1.3em' }}>
               <TempDegree value={dweather.temp.max}/>/<TempDegree value={dweather.temp.min}/>
             </Col>
-            <Col xs={1}  className='pt-2 justify-content-end'>
+            <Col xs={2} md={1} className='pt-2 justify-content-end'>
               <ContextAwareToggle eventKey={`${index}`} />
             </Col>
           </Accordion.Toggle>
@@ -53,7 +53,6 @@ export default function DailyWeather(props) {
   return (
     <>
       <Accordion defaultActiveKey="0" className="container">
-        <hr/>
         {listDaily}
       </Accordion>
     </>

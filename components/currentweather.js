@@ -1,6 +1,6 @@
 import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/weather.module.css'
-import gstyles from '../styles/global.module.css';
+import gstyles from '../styles/mobile.module.css';
 import TempDegree from './tempdegree';
 import WeatherStatPair from './weatherstatpair';
 
@@ -24,7 +24,6 @@ export default function CurrentWeather(props) {
   })
   return (
     <Container>
-      <hr/>
       <Row className={`flex-nowrap flex-sm-wrap ${gstyles.mobileRow}`}>
         {weatherStatPairs}
       </Row>

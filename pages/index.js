@@ -10,36 +10,29 @@ import Layout, { siteTitle } from '../components/layout'
 import CurrentWeather from '../components/currentweather'
 import DailyWeather from '../components/dailyweather'
 import ListCities from '../components/listCities'
+import ListCounties from '../components/listCounties'
 import roMajorCities from '../data/mmajor_ro_cities'
+import { formatForURL } from '../lib/strUtils';
 
 
-export const LOCATIONSBYIDS_QUERY = gql`
-  query locationsByIds($ids: [Int!]!, $orderBy: account_cityOrderBy) {
-    locationsByIds(ids: $ids, orderBy: $orderBy) {
+export const ALL_COUNTIES_QUERY = gql`
+  query counties($orderBy: account_countyOrderBy){
+    counties(orderBy: $orderBy) {
       id
-      county_id
-      longitude
-      latitude
       name
-      region
-      account_county {
-        id
-        name
-        code
-      }
     }
   }
 `;
 
 
-export default function Home({ locationQueryVars, roMajorCities }) {
+export default function Home({ allCountiesQueryVars, roMajorCities }) {
   const { data: gqlData } = useQuery(
-    LOCATIONSBYIDS_QUERY,
+    ALL_COUNTIES_QUERY,
     {
-      variables: locationQueryVars
+      variables: allCountiesQueryVars
     }
   );
-  let { locationsByIds } = gqlData;
+  let { counties } = gqlData;
   const location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
 
   // // get weather
@@ -62,65 +55,68 @@ export default function Home({ locationQueryVars, roMajorCities }) {
   
   // // debug logs
   // console.log(weatherData, error);
-
-  if (error) return <div>failed to load</div>;
-
+  const title = `Vremea in Romania - Prognoza buletin meteo 10 zile`
   return (
     <Layout home>
       <Head>
-        <title>{siteTitle}</title>
-        <meta property="og:site_name" content={siteTitle}></meta>
-        <meta property="og:title" content={`${siteTitle}`}></meta>
+        <title>{title}</title>
+        <meta property="og:site_name" content={title}></meta>
+        <meta property="og:title" content={`${title}`}></meta>
         <meta property="og:url" content="https://vremea.ionkom.com/"></meta>
         <meta
             name="description"
-            content="Afla cum va fi vremea in localitatea ta"
+            content="Vremea pentru 7 zile in Romania. Vezi prognoza meteo detaliata pentru luna curenta, vei sti intotdeauna ce planuri de vacanta sa iti faci."
         />
       </Head>
-      <Container fluid>
+      <Container>
+        <Row className="mt-2">
+          <Col>
+            <h1>Vezi cum va fi vremea in urmatoarele 7 zile</h1>
+            <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p>
+            <h2>Starea vremii in {location.name}, judetul {location.account_county.name}</h2>
+          </Col>          
+        </Row>
+        {(weatherData && !error)
+          ?
+          <>
+            <hr/>
+            <Row>
+              <CurrentWeather weatherData={weatherData}/>
+            </Row>
+            <hr/>
+            <Row>
+              <DailyWeather daily={weatherData.daily} />
+            </Row>
+          </>
+          : 
+          <Row className="justify-content-center">
+            <Spinner animation="border" role="status">
+              <span className="sr-only">Loading...</span>
+            </Spinner>
+          </Row>
+        }
+        {/* location details */}
+        <hr/>
         <Row>
-          <Col xs={12} md={1}>
-            Meteo in Romania
+          <Col>
+            <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
+              Arata {location.name} in Google Maps.
+            </a>
+            <p>Orasul {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+          </Col>
+        </Row>
+        <hr/>
+        <Row>
+          <Col xs={12}>
+            <h3>Cum se prezinta vremea in marile orase ale Romaniei</h3>
             <ListCities cities={roMajorCities}/>
           </Col>
-          <Col>
-            <Row>
-              <Col className="text-center mt-2">
-                <h1>{location.name}, {location.account_county.name}</h1>
-              </Col>
-            </Row>
-            {weatherData
-              ?
-              <>
-                <Row>
-                  <Col>
-                    <CurrentWeather weatherData={weatherData}/>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <DailyWeather daily={weatherData.daily} />
-                  </Col>
-                </Row>
-              </>
-              : 
-              <Row className="justify-content-center">
-                <Spinner animation="border" role="status">
-                  <span className="sr-only">Loading...</span>
-                </Spinner>
-              </Row>
-            }
-            <Row>
-              <Col>
-                <Container>
-                  <hr/>
-                  <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
-                    Locatia pe harta
-                  </a>
-                  <p>Judet: {location.account_county.name}, Regiune a tarii: {location.region}</p>
-                </Container>
-              </Col>
-            </Row>
+        </Row>
+        <hr/>
+        <Row>
+          <Col xs={12}>
+            <h3>Prognoza meteo pe judete</h3>
+            <ListCounties counties={counties}/>
           </Col>
         </Row>
       </Container>
@@ -128,25 +124,23 @@ export default function Home({ locationQueryVars, roMajorCities }) {
   )
 }
 
-export async function getStaticProps({ params }) {
-  const locationsIds = roMajorCities.map(city => city.id);
+export async function getStaticProps() {
   const apolloClient = initializeApollo();
   const queryVars = {
-    ids: locationsIds,
     orderBy: {
       "name": "asc"
     }
   }
 
   await apolloClient.query({
-    query: LOCATIONSBYIDS_QUERY,
+    query: ALL_COUNTIES_QUERY,
     variables: queryVars
   });
 
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      locationQueryVars: queryVars,
+      allCountiesQueryVars: queryVars,
       roMajorCities
     },
     revalidate: 1,

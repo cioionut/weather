@@ -34,9 +34,9 @@ export default function Layout({
               <Link href="/" passHref>
                 <Nav.Link>Vremea Acum</Nav.Link>
               </Link>
-              <Link href="/judete" passHref>
+              {/* <Link href="/judete" passHref>
                 <Nav.Link>Judete</Nav.Link>
-              </Link>
+              </Link> */}
               {/* <Link href="/localitati" passHref>
                 <Nav.Link>Localitati</Nav.Link>
               </Link> */}
