@@ -13,3 +13,17 @@
   float: none;
   margin: 0 auto;
 }
+
+.footer {
+  bottom: 0;
+  width: 100%;
+  line-height: 30px;
+  background-color: #f5f5f5;
+  font-size: 0.8rem;
+}
+.footerLink {  
+  color: #5f6368;
+}
+.footerLink:hover {  
+  color: #5f6368;
+}

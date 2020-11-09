@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
+import { Container, Row, Col } from 'react-bootstrap'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 
@@ -48,6 +49,26 @@ export default function Layout({
         </Navbar>
         
         <main>{children}</main>
+        <footer className={styles.footer}>
+          <Container fluid>
+              <Row>
+                <Col>
+                  Romania
+                </Col>
+              </Row>
+              <Row>
+                <Col xs='auto'>
+                  <Link href="https://ionkom.com/about"><a className={styles.footerLink}>About</a></Link>
+                </Col>
+                <Col xs='auto'>
+                  <Link href="https://ionkom.com/contact"><a className={styles.footerLink}>Contact</a></Link>
+                </Col>
+                {/* <Col xs='auto'>
+                  <span className="text-muted">© 2020 Copyright: <Link href="/"><a className={styles.footerLink}>ionkom.com</a></Link></span>
+                </Col> */}
+              </Row>
+          </Container>
+        </footer>
       </>
     )
 }
