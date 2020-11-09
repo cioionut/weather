@@ -28,18 +28,19 @@ export default function CurrentWeather(props) {
         {weatherStatPairs}
       </Row>
       <Row className="justify-content-center">
-        <Col xs="auto">
+        <Col xs='auto' className='pl-0 pr-0'>
           <img src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}></img>
         </Col>
-        <Col xs="auto">
-          <Row className={styles.mainTempFont}>
-            <TempDegree value={weatherData.current.temp}/> - {weatherData.current.weather[0].description}
-          </Row>
-          <Row style={{ fontSize: '1.3em' }}>
-            <p>
-              <span style={{ fontWeight: '300' }}>Se simte ca:</span> {Math.floor(weatherData.current.feels_like)}{String.fromCharCode(176)}
-            </p>
-          </Row>
+        <Col xs='auto' className='pl-0'>
+          <span className={styles.mainTempFont}>
+            <TempDegree value={weatherData.current.temp}/>
+              <span style={{textTransform: 'capitalize'}}>&nbsp;
+                {weatherData.current.weather[0].description}
+              </span>
+          </span>
+          <p style={{ fontSize: '1.3rem' }}>
+            <span style={{ fontWeight: '300' }}>Se simte ca:</span> {Math.floor(weatherData.current.feels_like)}{String.fromCharCode(176)}
+          </p>
         </Col>
       </Row>
     </Container>

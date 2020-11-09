@@ -1,9 +1,11 @@
+import Head from 'next/head'
 import { gql, useQuery } from '@apollo/client'
 import { initializeApollo } from '../../../lib/apolloClient'
 import Link from 'next/link'
 import Layout from '../../../components/layout'
 import { formatForURL } from '../../../lib/strUtils';
-import { Container, Row } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import ListCounties from '../../../components/listCounties'
 
 
 export const ALL_COUNTY_NAMES_QUERY = gql`
@@ -40,22 +42,30 @@ export default function County({ countyQueryVars }) {
   let countyName = countyQueryVars.countyName;
   if (locationsByCounty && locationsByCounty.length > 0)
     countyName = locationsByCounty[0].account_county.name;
+  
+  const title = `Vremea in ${countyName}, prognoza meteo pe 15 zile`;
+  // render
   return (
     <Layout>
+      <Head>
+        <title>{title}</title>
+        <meta property="og:site_name" content={title}></meta>
+        <meta property="og:title" content={`${title}`}></meta>
+        <meta property="og:url" content="https://vremea.ionkom.com/"></meta>
+        <meta
+            name="description"
+            content={`Prognoza meteo pentru judetul ${countyName}. Vremea pentru urmatoarele zile dar si un buletin meteo curent al localitatilor din judet`}
+        />
+      </Head>
       <Container>
         <Row className="justify-content-center">
-          <h3>Localitatile din judetul {countyName}</h3>
+          <h1>Vezi cum va fi vremea in urmatoarele saptamani in judetul {countyName}</h1>
         </Row>
-        <Row className="justify-content-center">
-          <ul>
-            {locationsByCounty.map(location => (
-              <li key={location.id}>
-                <Link href={`/vremea/${formatForURL(location.name)}-${formatForURL(location.account_county.name)}/${location.id}`}>
-                {location.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <Row>
+          <Col xs={12}>
+            <h3>Prognoza meteo pentru localitatile din judetul {countyName} </h3>
+            <ListCounties counties={locationsByCounty}/>
+          </Col>
         </Row>
       </Container>
     </Layout>

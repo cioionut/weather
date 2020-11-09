@@ -83,7 +83,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
             <Row>
               <CurrentWeather weatherData={weatherData}/>
             </Row>
-            <hr/>
+            <hr style={{marginTop: 0}}/>
             <Row>
               <DailyWeather daily={weatherData.daily} />
             </Row>
