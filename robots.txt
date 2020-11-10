@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://vremea.ionkom.com/sitemap.xml
