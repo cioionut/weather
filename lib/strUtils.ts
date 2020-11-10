@@ -9,3 +9,7 @@ export const replaceSpace = (str: String, delim='-') => {
 export const formatForURL = (str: String, delim='-') => {
     return replaceSpace(removeDiacritics(str), delim).toLowerCase();
 }
+
+export const checkTime = (i: Number) => {
+    return (i < 10) ? "0" + i : i;
+}
