@@ -11,11 +11,11 @@ import CurrentWeather from '../../../components/currentweather'
 import DailyWeather from '../../../components/dailyweather'
 import WeatherStatPair from '../../../components/weatherstatpair'
 import ListCities from '../../../components/listCities'
-
+import Link from 'next/link';
 
 
 export const LOCATION_QUERY = gql`
-  query location($locationId: Int!, $countyName: String!, $orderBy: account_cityOrderBy) {
+  query location($locationId: Int!) {
     location(locationId: $locationId) {
       id
       county_id
@@ -30,16 +30,17 @@ export const LOCATION_QUERY = gql`
         code
       }
     }
-    locationsByCounty(countyName: $countyName, orderBy: $orderBy) {
-      id
-      name
-      account_county {
-        id
-        name
-      }
-    }
   }
 `;
+// $countyName: String!, $orderBy: account_cityOrderBy
+// locationsByCounty(countyName: $countyName, orderBy: $orderBy) {
+//   id
+//   name
+//   account_county {
+//     id
+//     name
+//   }
+// }
 
 export const ALL_LOCATIONS_QUERY = gql`
   {
@@ -133,15 +134,16 @@ export default function LocationCounty({ locationQueryVars }) {
               Arata {location.name} in Google Maps.
             </a>
             <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+            <p>Vezi prognoza meteo pentru celelalte localitati din judetul <Link href={`/vremea/${formatForURL(location.account_county.name)}`}>{location.account_county.name}</Link>.</p>          
           </Col>
         </Row>
-        <hr/>
+        {/* <hr/>
         <Row>
           <Col xs={12}>
             <h3>Prognoza meteo in celelalte localitati din judetul {location.account_county.name}</h3>
             <ListCities cities={locationsByCounty}/>
           </Col>
-        </Row>
+        </Row> */}
       </Container>
     </Layout>
   )
