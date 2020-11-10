@@ -13,6 +13,7 @@ import ListCities from '../components/listCities'
 import ListCounties from '../components/listCounties'
 import roMajorCities from '../data/mmajor_ro_cities'
 import { formatForURL } from '../lib/strUtils';
+import WeatherStatPair from '../components/weatherstatpair'
 
 
 export const ALL_COUNTIES_QUERY = gql`
@@ -35,23 +36,23 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
   let { counties } = gqlData;
   const location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
 
-  // // get weather
-  // const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
-  // const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  // let url = new URL(`${openweatherApiUrl}/onecall`);
-  // let queryParams = {
-  //   lat: location.latitude, 
-  //   lon: location.longitude, 
-  //   lang: 'ro',
-  //   appid: openweatherApiKey,
-  //   units: 'metric',
-  //   exclude: 'minutely'
-  // };
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(url, fetcher);
+  // get weather
+  const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
+  const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+  let url = new URL(`${openweatherApiUrl}/onecall`);
+  let queryParams = {
+    lat: location.latitude, 
+    lon: location.longitude, 
+    lang: 'ro',
+    appid: openweatherApiKey,
+    units: 'metric',
+    exclude: 'minutely'
+  };
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
+  const { data: weatherData, error } = useSWR(url, fetcher);
 
-  const { data: weatherData, error } = useSWR(
-    `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
+  // const { data: weatherData, error } = useSWR(
+  //   `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
   
   // // debug logs
   // console.log(weatherData, error);
@@ -99,10 +100,11 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         <hr/>
         <Row>
           <Col>
+            <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
             <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
               Arata {location.name} in Google Maps.
             </a>
-            <p>Orasul {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+            <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
           </Col>
         </Row>
         <hr/>

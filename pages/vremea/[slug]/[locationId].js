@@ -9,13 +9,17 @@ import { Container, Row, Col, Spinner } from 'react-bootstrap';
 import Layout from '../../../components/layout';
 import CurrentWeather from '../../../components/currentweather'
 import DailyWeather from '../../../components/dailyweather'
+import WeatherStatPair from '../../../components/weatherstatpair'
+import ListCities from '../../../components/listCities'
+
 
 
 export const LOCATION_QUERY = gql`
-  query location($locationId: Int!) {
+  query location($locationId: Int!, $countyName: String!, $orderBy: account_cityOrderBy) {
     location(locationId: $locationId) {
       id
       county_id
+      siruta
       longitude
       latitude
       name
@@ -24,6 +28,14 @@ export const LOCATION_QUERY = gql`
         id
         name
         code
+      }
+    }
+    locationsByCounty(countyName: $countyName, orderBy: $orderBy) {
+      id
+      name
+      account_county {
+        id
+        name
       }
     }
   }
@@ -51,25 +63,25 @@ export default function LocationCounty({ locationQueryVars }) {
       variables: locationQueryVars
     }
   );
-  let { location } = gqlData;
+  let { location, locationsByCounty } = gqlData;
 
-  // // get weather
-  // const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
-  // const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  // let url = new URL(`${openweatherApiUrl}/onecall`);
-  // let queryParams = {
-  //   lat: location.latitude, 
-  //   lon: location.longitude, 
-  //   lang: 'ro',
-  //   appid: openweatherApiKey,
-  //   units: 'metric',
-  //   exclude: 'minutely'
-  // };
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(url, fetcher);
+  // get weather
+  const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
+  const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+  let url = new URL(`${openweatherApiUrl}/onecall`);
+  let queryParams = {
+    lat: location.latitude, 
+    lon: location.longitude, 
+    lang: 'ro',
+    appid: openweatherApiKey,
+    units: 'metric',
+    exclude: 'minutely'
+  };
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
+  const { data: weatherData, error } = useSWR(url, fetcher);
 
-  const { data: weatherData, error } = useSWR(
-    `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
+  // const { data: weatherData, error } = useSWR(
+  //   `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
   
   
   const title = `Vremea in ${location.name}, judetul ${location.account_county.name}`
@@ -114,11 +126,20 @@ export default function LocationCounty({ locationQueryVars }) {
         {/* location details */}
         <hr/>
         <Row>
-          <Col>
+        <Col>
+            <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
+            <p><WeatherStatPair pkey='Siruta' value={location.siruta} /></p>
             <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
               Arata {location.name} in Google Maps.
             </a>
-            <p>Orasul {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+            <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+          </Col>
+        </Row>
+        <hr/>
+        <Row>
+          <Col xs={12}>
+            <h3>Prognoza meteo in celelalte localitati din judetul {location.account_county.name}</h3>
+            <ListCities cities={locationsByCounty}/>
           </Col>
         </Row>
       </Container>
@@ -150,21 +171,25 @@ export const getStaticPaths = async () => {
 
 export async function getStaticProps({ params }) {
   const locationId = parseInt(params.locationId);
+  const countyName = params.slug.split('-')[1];
   const apolloClient = initializeApollo();
+  const queryVars = {
+    locationId,
+    countyName,
+    orderBy: {
+      "name": "asc"
+    }
+  }
 
   await apolloClient.query({
     query: LOCATION_QUERY,
-    variables: {
-      locationId
-    }
+    variables: queryVars
   });
 
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      locationQueryVars: {
-        locationId
-      }
+      locationQueryVars: queryVars
     },
     revalidate: 1,
   }
