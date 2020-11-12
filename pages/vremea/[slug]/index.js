@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Layout from '../../../components/layout'
 import { formatForURL } from '../../../lib/strUtils';
 import { Container, Row, Col } from 'react-bootstrap';
-import ListCounties from '../../../components/listCounties'
+import ListCities from '../../../components/listCities'
 
 
 export const ALL_COUNTY_NAMES_QUERY = gql`
@@ -64,7 +64,7 @@ export default function County({ countyQueryVars }) {
         <Row>
           <Col xs={12}>
             <h3>Prognoza meteo pentru localitatile din judetul {countyName} </h3>
-            <ListCounties counties={locationsByCounty}/>
+            <ListCities cities={locationsByCounty}/>
           </Col>
         </Row>
       </Container>
