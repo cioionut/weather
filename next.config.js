@@ -3,7 +3,9 @@ module.exports = {
     if (isServer) {
       require('./nodejs-scripts/generate-sitemap');
     }
-
     return config;
-  }
+  },
+  images: {
+    domains: ['openweathermap.org'],
+  },
 };

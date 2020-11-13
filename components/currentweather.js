@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/weather.module.css'
 import gstyles from '../styles/mobile.module.css';
@@ -29,7 +30,12 @@ export default function CurrentWeather(props) {
       </Row>
       <Row className="justify-content-center">
         <Col xs='auto' className='pl-0 pr-0'>
-          <img src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}></img>
+          <Image
+            src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}
+            alt={weatherData.current.weather[0].description}
+            width={100}
+            height={100}
+          />
         </Col>
         <Col xs='auto' className='pl-0'>
           <span className={styles.mainTempFont}>

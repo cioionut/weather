@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Row, Table, Accordion, ListGroup, Col, Container } from 'react-bootstrap';
 import TempDegree from './tempdegree';
 import { rodays, romonths } from '../lib/constants';
@@ -41,8 +42,13 @@ export default function DailyWeather(props) {
     return (
         <div key={index}>
           <Accordion.Toggle as={Row} eventKey={`${index}`} className={`mt-1 ${styles.togleRow}`}>
-            <Col md={1} sm={3} xs={3}>
-              <img src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`} height='55px'></img>
+            <Col md={1} xs={3}>
+              <Image
+                src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`}
+                alt={dweather.weather[0].description}
+                width={60}
+                height={60}
+              />
             </Col>
             <Col md={2} xs={4} className='pt-2' style={{ fontWeight: '430', fontSize: '1.3em' }}>{dayNameDisp}</Col>
             <Col className='pt-2' style={{ fontWeight: '350', fontSize: '1.3em' }}>
@@ -66,6 +72,7 @@ export default function DailyWeather(props) {
                 <Row className='justify-content-center'>
                   <Col xs={9}>
                     <span style={{ fontWeight: '350'}}>
+                      In general <SoftBold>{dweather.weather[0].description}</SoftBold>. 
                       Temperatura resimtita in aceasta dimineata va fi de <SoftBold><TempDegree value={dweather.feels_like.morn}/></SoftBold>,
                       la amiaza <SoftBold><TempDegree value={dweather.feels_like.day}/></SoftBold>, 
                       spre seara se vor simti temperaturi de <SoftBold><TempDegree value={dweather.feels_like.eve}/></SoftBold>.
