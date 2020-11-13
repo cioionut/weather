@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { Container, Row, Col } from 'react-bootstrap'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
+import CookieConsent from "react-cookie-consent";
 
 import styles from '../styles/layout.module.css'
 
@@ -69,6 +70,32 @@ export default function Layout({
               </Row>
           </Container>
         </footer>
+        <CookieConsent
+          disableStyles={true}
+          // location='bottom'
+          buttonText='DA, INTELEG'
+          buttonClasses="btn btn-secondary float-right"
+          containerClasses="alert alert-secondary"
+          style={{
+            fontSize: '0.85rem',
+            link: '#5f6368',
+
+            // display: "flex",
+            // flexWrap: "wrap",
+            // justifyContent: "space-between",
+            // left: "0",
+            position: "fixed",
+            width: "100%",
+            zIndex: "999",
+          }}
+          buttonStyle={{
+            fontSize: '0.85rem'
+          }}
+        >
+          Folosim cookies pentru analiza traficului, continut personalizat si imbunatatirea continua a site-ului.
+          Pentru a afla mai multe sau a schimba setarile acceseaza <Link href='/politici/cookies'><a className='alert-link'>Politica de Cookies</a></Link>.  
+          Confirmand ca ai inteles sau navigând pe acest website, ești de acord să permiți colectarea de informații prin cookie-uri sau tehnologii similare. 
+        </CookieConsent>
       </>
     )
 }
