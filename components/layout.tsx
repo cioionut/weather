@@ -34,6 +34,9 @@ export default function Layout({
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto"  activeKey={router.pathname}>
               <Link href="/" passHref>
+                <Nav.Link>Home</Nav.Link>
+              </Link>
+              <Link href="/" passHref>
                 <Nav.Link>Vremea Acum</Nav.Link>
               </Link>
               {/* <Link href="/judete" passHref>

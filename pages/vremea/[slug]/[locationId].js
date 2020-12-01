@@ -1,17 +1,21 @@
 import Head from 'next/head'
+import Link from 'next/link';
+import useSWR from 'swr';
 import { gql, useQuery } from '@apollo/client'
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { useState } from 'react';
+
 import { initializeApollo } from '../../../lib/apolloClient'
 import { formatForURL } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
-import useSWR from 'swr';
-import { Container, Row, Col, Spinner } from 'react-bootstrap';
 
 import Layout from '../../../components/layout';
 import CurrentWeather from '../../../components/currentweather'
 import DailyWeather from '../../../components/dailyweather'
 import WeatherStatPair from '../../../components/weatherstatpair'
 import ListCities from '../../../components/listCities'
-import Link from 'next/link';
+
+import weatherDataInit from '../../../data/weather_data_init'
 
 
 export const LOCATION_QUERY = gql`
@@ -32,15 +36,6 @@ export const LOCATION_QUERY = gql`
     }
   }
 `;
-// $countyName: String!, $orderBy: account_cityOrderBy
-// locationsByCounty(countyName: $countyName, orderBy: $orderBy) {
-//   id
-//   name
-//   account_county {
-//     id
-//     name
-//   }
-// }
 
 export const ALL_LOCATIONS_QUERY = gql`
   {
@@ -55,8 +50,7 @@ export const ALL_LOCATIONS_QUERY = gql`
 `;
 
 
-
-export default function LocationCounty({ locationQueryVars }) {
+export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
 
   const { data: gqlData } = useQuery(
     LOCATION_QUERY,
@@ -65,6 +59,8 @@ export default function LocationCounty({ locationQueryVars }) {
     }
   );
   let { location, locationsByCounty } = gqlData;
+  const [weatherData, setWeatherData] = useState(weatherDataInit);
+  const [shouldGetWeather, setShouldGetWeather] = useState(true);
 
   // get weather
   const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
@@ -79,10 +75,17 @@ export default function LocationCounty({ locationQueryVars }) {
     exclude: 'minutely'
   };
   Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data: weatherData, error } = useSWR(url, fetcher);
-
-  // const { data: weatherData, error } = useSWR(
-  //   `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro`, fetcher);
+  const { data, error } = useSWR(
+    () => shouldGetWeather ? url : null, fetcher);
+  // // get weather from nextjs api routes
+  // const { data, error } = useSWR(
+  //   () => shouldGetWeather ? `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher);
+  if (data && !error) {
+    setWeatherData(data);
+    setShouldGetWeather(false);
+  }
+  // useTimeout(() => setShouldGetWeather(true), 3000);
   
   
   const title = `Vremea in ${location.name}, judetul ${location.account_county.name}`
@@ -100,50 +103,71 @@ export default function LocationCounty({ locationQueryVars }) {
         />
       </Head>
       <Container>
+        {/* site title */}
         <Row className="mt-2">
           <Col>
-            <h1>Vezi cum va fi vremea in {location.name}, judetul {location.account_county.name}</h1>
+            <h1 className="text-center">Vremea in {location.name}, judetul {location.account_county.name}</h1>
+            {/* <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p> */}
           </Col>          
         </Row>
-        {(weatherData && !error)
-          ?
-          <>
-            <hr/>
-            <Row>
-              <CurrentWeather weatherData={weatherData}/>
-            </Row>
-            <hr/>
-            <Row>
-              <DailyWeather daily={weatherData.daily} />
-            </Row>
-          </>
-          : 
-          <Row className="justify-content-center">
-            <Spinner animation="border" role="status">
-              <span className="sr-only">Loading...</span>
-            </Spinner>
-          </Row>
-        }
+        {/* vremea curenta */}
+        <hr/>
+        <Row>
+          <Col>
+            <h2>Vremea acum</h2>
+          </Col> 
+        </Row>
+        <hr style={{marginTop: 0}}/>
+        <Row>
+          <CurrentWeather weatherData={weatherData}/>
+        </Row>
+        {/* vremea pe zile */}
+        <Row>
+          <Col>
+            <h3>Vremea in urmatoarele 7 zile</h3>
+          </Col> 
+        </Row>
+        <hr style={{marginTop: 0}}/>
+        <Row>
+          <DailyWeather daily={weatherData.daily} />
+        </Row>
+        {/* vremea 15 pe zile */}
+        <Row>
+          <Col>
+            <h3>Prognoza meteo pe 15 zile</h3>
+          </Col> 
+        </Row>
+        <hr style={{marginTop: 0}}/>
+        <Row>
+          <Col>
+            <Button disabled>Cere raportul detaliat</Button>
+          </Col>
+        </Row>
         {/* location details */}
         <hr/>
         <Row>
-        <Col>
+          <Col>
+            <h3>Detalii geografice despre {location.name} </h3>
             <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
-            <p><WeatherStatPair pkey='Siruta' value={location.siruta} /></p>
             <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
               Arata {location.name} in Google Maps.
             </a>
             <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
-            <p>Vezi prognoza meteo pentru celelalte localitati din judetul <Link href={`/vremea/${formatForURL(location.account_county.name)}`}>{location.account_county.name}</Link>.</p>          
           </Col>
         </Row>
-        {/* <hr/>
+        <hr/>
         <Row>
           <Col xs={12}>
-            <h3>Prognoza meteo in celelalte localitati din judetul {location.account_county.name}</h3>
-            <ListCities cities={locationsByCounty}/>
+            <h3>
+              <Link href={`/vremea/${formatForURL(location.account_county.name)}`}>
+                <a>
+                Prognoza meteo in celelalte localitati din judetul {location.account_county.name}
+                </a>
+              </Link>
+            </h3>
+            {/* <ListCities cities={locationsByCounty}/> */}
           </Col>
-        </Row> */}
+        </Row>
       </Container>
     </Layout>
   )
@@ -191,7 +215,8 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      locationQueryVars: queryVars
+      locationQueryVars: queryVars,
+      weatherDataInit
     },
     revalidate: 1,
   }

@@ -44,23 +44,31 @@ export default function DailyWeather(props) {
           <Accordion.Toggle as={Row} eventKey={`${index}`} className={`mt-1 ${styles.togleRow}`}>
             <Col md={1} xs={3}>
               <Image
-                src={`https://openweathermap.org/img/wn/${dweather.weather[0].icon}@2x.png`}
+                src={`/weather_icons/${dweather.weather[0].icon}@2x.png`}
                 alt={dweather.weather[0].description}
-                width={60}
-                height={60}
+                width={50}
+                height={50}
+                responsive='true'
               />
             </Col>
             <Col md={2} xs={4} className='pt-2' style={{ fontWeight: '430', fontSize: '1.3em' }}>{dayNameDisp}</Col>
-            <Col className='pt-2' style={{ fontWeight: '350', fontSize: '1.3em' }}>
+            <Col md={8} xs={3} className='pt-2' style={{ fontWeight: '350', fontSize: '1.3em' }}>
               <TempDegree value={dweather.temp.max}/>/<TempDegree value={dweather.temp.min}/>
             </Col>
-            <Col xs={2} md={1} className='pt-2 justify-content-end'>
+            <Col md={1} xs={2} className='pt-2 text-right'>
               <ContextAwareToggle eventKey={`${index}`} />
             </Col>
           </Accordion.Toggle>
           <Accordion.Collapse eventKey={`${index}`}>
             <Row>
               <Container>
+                {/* <Row className='justify-content-center'>
+                  <Col xs='auto'>
+                    <span style={{textTransform: 'capitalize'}}>
+                      {dweather.weather[0].description} 
+                    </span>
+                  </Col>
+                </Row> */}
                 <Row className={`flex-nowrap flex-sm-wrap ${gstyles.mobileRow}`}>
                   <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Precipitatii' value={`${dweather.pop*100}%`}/></Col>
                   <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Umiditate' value={`${dweather.humidity}%`}/></Col>
@@ -70,29 +78,25 @@ export default function DailyWeather(props) {
                   <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Pct. condensare' value={<TempDegree value={dweather.dew_point}/>}/></Col>
                 </Row>
                 <Row className='justify-content-center'>
-                  <Col xs={9}>
-                    <span style={{ fontWeight: '350'}}>
-                      In general <SoftBold>{dweather.weather[0].description}</SoftBold>. 
-                      Temperatura resimtita in aceasta dimineata va fi de <SoftBold><TempDegree value={dweather.feels_like.morn}/></SoftBold>,
-                      la amiaza <SoftBold><TempDegree value={dweather.feels_like.day}/></SoftBold>, 
-                      spre seara se vor simti temperaturi de <SoftBold><TempDegree value={dweather.feels_like.eve}/></SoftBold>.
+                  <Col xs='auto'>
+                    <span style={{textTransform: 'capitalize'}}>
+                      {dweather.weather[0].description} 
                     </span>
-                    {/* <span style={{ fontWeight: '350'}}>
-                      <NormalFW>Dimineata</NormalFW> vom avea temperaturi de&nbsp;
-                        <SoftBold><TempDegree value={dweather.temp.morn}/>/(se va simti ca la <TempDegree value={dweather.feels_like.morn}/>)</SoftBold>,
-                      la <NormalFW>amiaza</NormalFW> vremea devine mai calda&nbsp; 
-                        <SoftBold><TempDegree value={dweather.temp.day}/>/<TempDegree value={dweather.feels_like.day}/></SoftBold>,
-                      spre <NormalFW>seara</NormalFW>&nbsp;
-                        <SoftBold><TempDegree value={dweather.temp.eve}/>/<TempDegree value={dweather.feels_like.eve}/></SoftBold>,
-                      iar la <NormalFW>noapte</NormalFW>&nbsp;
-                        <SoftBold><TempDegree value={dweather.temp.night}/>/<TempDegree value={dweather.feels_like.night}/></SoftBold>
-                    </span> */}
                   </Col>
-                </Row>
-                <Row className='justify-content-center'>
                   <Col xs='auto'>
                     <WeatherStatPair pkey='Min' value={<TempDegree value={dweather.temp.min}/>}/>
+                  </Col>
+                  <Col xs='auto'>
                     <WeatherStatPair pkey='Max' value={<TempDegree value={dweather.temp.max}/>}/>
+                  </Col>
+                  <Col xs='auto'>
+                    <WeatherStatPair pkey='Dimineata' value={<TempDegree value={dweather.feels_like.morn}/>}/>
+                  </Col>
+                  <Col xs='auto'>
+                    <WeatherStatPair pkey='Ziua' value={<TempDegree value={dweather.feels_like.day}/>}/>
+                  </Col>
+                  <Col xs='auto'>
+                    <WeatherStatPair pkey='Seara' value={<TempDegree value={dweather.feels_like.eve}/>}/>
                   </Col>
                 </Row>
                 <Row className='justify-content-center'>
