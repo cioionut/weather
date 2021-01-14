@@ -88,7 +88,7 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
   // useTimeout(() => setShouldGetWeather(true), 3000);
   
   
-  const title = `Vremea in ${location.name}, judetul ${location.account_county.name}`
+  const title = `Vremea în ${location.name}, ${location.account_county.name}, ${location.region}, Prognoza Meteo pe 15 zile `
   // render
   return (
     <Layout>
@@ -99,14 +99,14 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         <meta property="og:url" content="https://vremea.ionkom.com/"></meta>
         <meta
             name="description"
-            content={`Prognoza meteo pentru ${location.name} din judetul ${location.account_county.name}. Vremea pentru urmatoarele zile dar si un buletin meteo curent al localitatii`}
+            content={`Vremea în ${location.name} și judetul ${location.account_county.name} regiunea ${location.region}. Starea vremii include temperatura, precipitațiile, vântul, vizibilitatea și indexul UV pt 15 zile. Buletin meteo curat și pe ințelesul tuturor.`}
         />
       </Head>
       <Container>
         {/* site title */}
         <Row className="mt-2">
           <Col>
-            <h1 className="text-center">Vremea in {location.name}, judetul {location.account_county.name}</h1>
+            <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}, {location.region}</h1>
             {/* <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p> */}
           </Col>          
         </Row>
