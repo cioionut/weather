@@ -43,12 +43,12 @@ export default function DailyWeather(props) {
         <div key={index}>
           <Accordion.Toggle as={Row} eventKey={`${index}`} className={`mt-1 ${styles.togleRow}`}>
             <Col md={1} xs={3}>
-              <Image
+              <img
                 src={`/weather_icons/${dweather.weather[0].icon}@2x.png`}
                 alt={dweather.weather[0].description}
                 width={50}
                 height={50}
-                responsive='true'
+                // responsive='true'
               />
             </Col>
             <Col md={2} xs={4} className='pt-2' style={{ fontWeight: '430', fontSize: '1.3em' }}>{dayNameDisp}</Col>

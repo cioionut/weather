@@ -30,12 +30,12 @@ export default function CurrentWeather(props) {
       </Row>
       <Row className="justify-content-center">
         <Col xs='auto' className='pl-0 pr-0'>
-          <Image
+          <img
             src={`/weather_icons/${weatherData.current.weather[0].icon}@2x.png`}
             alt={weatherData.current.weather[0].description}
             width={80}
             height={80}
-            responsive='true'
+            // responsive='true'
           />
         </Col>
         <Col xs='auto' className='pl-0'>
