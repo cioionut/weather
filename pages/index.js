@@ -1,26 +1,29 @@
-import Head from 'next/head'
-import Link from 'next/link'
-import { Container, Row, Col, Button } from 'react-bootstrap'
-import { gql, useQuery } from '@apollo/client'
-import { initializeApollo } from '../lib/apolloClient'
-import { useState } from 'react';
-import useTimeout from 'use-timeout'
+import Head from 'next/head';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+import { gql, useQuery } from '@apollo/client';
 
 import useSWR from 'swr';
+
+import { MdLocationOn, MdLocationOff } from "react-icons/md";
+
+// local
+// libs
 import { fetcher } from '../lib/fetchUtils';
-import { formatForURL } from '../lib/strUtils';
+import { initializeApollo } from '../lib/apolloClient';
 
-import Layout, { siteTitle } from '../components/layout'
-import CurrentWeather from '../components/currentweather'
-import DailyWeather from '../components/dailyweather'
-import ListCities from '../components/listCities'
-import ListCounties from '../components/listCounties'
-import WeatherStatPair from '../components/weatherstatpair'
+// components
+import Layout, { siteTitle } from '../components/layout';
+import CurrentWeather from '../components/currentweather';
+import Daily3hWeather from '../components/daily3hweather';
+import ListCities from '../components/listCities';
+import ListCounties from '../components/listCounties';
+import WeatherStatPair from '../components/weatherstatpair';
 
-import roMajorCities from '../data/mmajor_ro_cities'
-import weatherDataInit from '../data/weather_data_init'
+// data
+import roMajorCities from '../data/mmajor_ro_cities';
+import initWData from '../data/init_fday5_weather';
 
-
+// graphQL
 export const ALL_COUNTIES_QUERY = gql`
   query counties($orderBy: account_countyOrderBy){
     counties(orderBy: $orderBy) {
@@ -31,7 +34,9 @@ export const ALL_COUNTIES_QUERY = gql`
 `;
 
 
-export default function Home({ allCountiesQueryVars, roMajorCities, weatherDataInit }) {
+export default function Home({ allCountiesQueryVars, roMajorCities }) {
+  
+  // get counties data
   const { data: gqlData } = useQuery(
     ALL_COUNTIES_QUERY,
     {
@@ -39,38 +44,65 @@ export default function Home({ allCountiesQueryVars, roMajorCities, weatherDataI
     }
   );
   let { counties } = gqlData;
-  const location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
+  let locationIcon = <MdLocationOn/>;
+  let location;
 
-  const [weatherData, setWeatherData] = useState(weatherDataInit);
-  const [shouldGetWeather, setShouldGetWeather] = useState(true);
+  // set global SWR config
+  let cwSwrConfig = {
+    'initialData': { 'list': initWData.list, 'scity': initWData.city },
+    'revalidateOnMount': true,
+    'revalidateOnFocus': false,
+    'revalidateOnReconnect': false,
+    'dedupingInterval': 10*60*1000,
+    'focusThrottleInterval': 10*60*1000,
+    'errorRetryCount': 0
+  };
 
-  // get weather
+  // ip geolocation
+  const geoIpAPIUrlStr = process.env.NEXT_PUBLIC_FREEGEOIP_API;
+  let geoIpAPIUrl = new URL(`${geoIpAPIUrlStr}/json/`);
+  const { data: geoIpData, error: geoIpErr } = useSWR(geoIpAPIUrl, fetcher, cwSwrConfig);
+
+  if (geoIpData && !geoIpErr) {
+    // set location var
+    location = {
+      name: geoIpData.city,
+      account_county: { name: geoIpData.region_name },
+      latitude: geoIpData.latitude,
+      longitude: geoIpData.longitude,
+    };
+  } else {
+    // set default location to Bucharest
+    location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
+    locationIcon = <MdLocationOff/>
+  }
+
+  // set weather api params
   const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
   const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  let url = new URL(`${openweatherApiUrl}/onecall`);
+
+  let url = new URL(`${openweatherApiUrl}/forecast`);
   let queryParams = {
-    lat: location.latitude, 
-    lon: location.longitude, 
+    lat: location && location.latitude, 
+    lon: location && location.longitude, 
     lang: 'ro',
     appid: openweatherApiKey,
-    units: 'metric',
-    exclude: 'minutely'
+    units: 'metric'
   };
+
+  // make the call
   Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data, error } = useSWR(
-    () => shouldGetWeather ? url : null, fetcher);
+  const { data: weatherData, error } = useSWR(
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
   // // get weather from nextjs api routes
-  // const { data, error } = useSWR(
-  //   () => shouldGetWeather ? `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-  //   fetcher);
-  if (data && !error) {
-    setWeatherData(data);
-    setShouldGetWeather(false);
-  }
-  // useTimeout(() => setShouldGetWeather(true), 3000);
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);
 
+  const title = `Vremea în România, 15 zile de prognoză meteo precisă`;
 
-  const title = `Vremea in Romania - Prognoza meteo pe 10 zile`
+  // render
   return (
     <Layout home>
       <Head>
@@ -80,37 +112,38 @@ export default function Home({ allCountiesQueryVars, roMajorCities, weatherDataI
         <meta property="og:url" content="https://vremea.ionkom.com/"></meta>
         <meta
             name="description"
-            content="Vremea pentru 7 zile in Bucuresti, Romania. Vezi prognoza meteo detaliata pentru luna curenta, vei sti intotdeauna ce planuri de vacanta sa iti faci."
+            content="Vremea în Romania. Vezi prognoza meteo detaliata pentru luna curenta, Starea vremii cuprinde cu temperatura, precipitațiile, vântul si umiditatea pentru 15 zile. Vezi vremea pentru localitățile din"
         />
       </Head>
       <Container>
         {/* site title */}
         <Row className="mt-2">
           <Col>
-            <h1 className="text-center">Vremea in {location.name}, judetul {location.account_county.name}</h1>
+            {location
+              ? <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}</h1>
+              : <h1 className="text-center">Vremea</h1>
+            }
             {/* <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p> */}
           </Col>          
         </Row>
         {/* vremea curenta */}
-        <hr/>
-        <Row>
-          <Col>
-            <h2>Acum in capitala</h2>
-          </Col> 
+        <Row className="mt-5">
+          <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
         </Row>
-        <hr style={{marginTop: 0}}/>
         <Row>
-          <CurrentWeather weatherData={weatherData}/>
+          <Col className="text-right" style={{ fontWeight: '350' }}>
+            <p>{locationIcon} Meteo folosind locația dispozitivului tău</p>
+          </Col>
         </Row>
         {/* vremea pe zile */}
         <Row>
           <Col>
-            <h3>Vremea in urmatoarele 7 zile</h3>
+            <h3>Vremea in urmatoarele zile</h3>
           </Col> 
         </Row>
         <hr style={{marginTop: 0}}/>
         <Row>
-          <DailyWeather daily={weatherData.daily} />
+          <Daily3hWeather daily={weatherData.list} />
         </Row>
         {/* vremea 15 pe zile */}
         <Row>
@@ -126,16 +159,21 @@ export default function Home({ allCountiesQueryVars, roMajorCities, weatherDataI
         </Row>
         {/* location details */}
         <hr/>
-        <Row>
-          <Col>
-            <h3>Detalii geografice despre {location.name} </h3>
-            <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
-            <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
-              Arata {location.name} in Google Maps.
-            </a>
-            <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
-          </Col>
-        </Row>
+        {
+          location &&
+          <Row>
+            <Col>
+              <h3>Detalii geografice despre {location.name} </h3>
+              <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
+              <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
+                Arata {location.name} in Google Maps.
+              </a>
+              <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+            </Col>
+          </Row>
+        }
+
+        {/* other locations links */}
         <hr/>
         <Row>
           <Col xs={12}>
@@ -173,7 +211,6 @@ export async function getStaticProps() {
       initialApolloState: apolloClient.cache.extract(),
       allCountiesQueryVars: queryVars,
       roMajorCities,
-      weatherDataInit
     },
     revalidate: 1,
   }

@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import weatherExamplePayload from '../../data/weather_example_payload'
+import weatherExamplePayload from '../../data/init_current_weather'
 
 export default async (req, res) => {
 

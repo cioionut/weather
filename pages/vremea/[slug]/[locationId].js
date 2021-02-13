@@ -5,17 +5,22 @@ import { gql, useQuery } from '@apollo/client'
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useState } from 'react';
 
+// local
+// libs
 import { initializeApollo } from '../../../lib/apolloClient'
 import { formatForURL } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
 
+// components
 import Layout from '../../../components/layout';
 import CurrentWeather from '../../../components/currentweather'
-import DailyWeather from '../../../components/dailyweather'
+import Daily3hWeather from '../../../components/daily3hweather'
 import WeatherStatPair from '../../../components/weatherstatpair'
 import ListCities from '../../../components/listCities'
 
-import weatherDataInit from '../../../data/weather_data_init'
+// data
+import initWData from '../../../data/init_fday5_weather';
+
 
 
 export const LOCATION_QUERY = gql`
@@ -59,34 +64,38 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
     }
   );
   let { location, locationsByCounty } = gqlData;
-  const [weatherData, setWeatherData] = useState(weatherDataInit);
-  const [shouldGetWeather, setShouldGetWeather] = useState(true);
+
+  // set global SWR config
+  let cwSwrConfig = {
+    'initialData': { 'list': initWData.list, 'scity': initWData.city },
+    'revalidateOnMount': true,
+    'revalidateOnFocus': false,
+    'revalidateOnReconnect': false,
+    'dedupingInterval': 10*60*1000,
+    'focusThrottleInterval': 10*60*1000,
+    'errorRetryCount': 0
+  };
 
   // get weather
   const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
   const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  let url = new URL(`${openweatherApiUrl}/onecall`);
+  let url = new URL(`${openweatherApiUrl}/forecast`);
   let queryParams = {
-    lat: location.latitude, 
-    lon: location.longitude, 
+    lat: location && location.latitude, 
+    lon: location && location.longitude, 
     lang: 'ro',
     appid: openweatherApiKey,
-    units: 'metric',
-    exclude: 'minutely'
+    units: 'metric'
   };
+  // call owm api
   Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data, error } = useSWR(
-    () => shouldGetWeather ? url : null, fetcher);
+  const { data: weatherData, error } = useSWR(
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
   // // get weather from nextjs api routes
-  // const { data, error } = useSWR(
-  //   () => shouldGetWeather ? `/api/weather?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-  //   fetcher);
-  if (data && !error) {
-    setWeatherData(data);
-    setShouldGetWeather(false);
-  }
-  // useTimeout(() => setShouldGetWeather(true), 3000);
-  
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);  
   
   const title = `Vremea în ${location.name}, ${location.account_county.name}, ${location.region}, Prognoza Meteo pe 15 zile `
   // render
@@ -107,7 +116,6 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         <Row className="mt-2">
           <Col>
             <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}, {location.region}</h1>
-            {/* <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p> */}
           </Col>          
         </Row>
         {/* vremea curenta */}
@@ -119,17 +127,17 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         </Row>
         <hr style={{marginTop: 0}}/>
         <Row>
-          <CurrentWeather weatherData={weatherData}/>
+          <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
         </Row>
         {/* vremea pe zile */}
         <Row>
           <Col>
-            <h3>Vremea in urmatoarele 7 zile</h3>
+            <h3>Vremea in urmatoarele zile</h3>
           </Col> 
         </Row>
         <hr style={{marginTop: 0}}/>
         <Row>
-          <DailyWeather daily={weatherData.daily} />
+          <Daily3hWeather daily={weatherData.list} />
         </Row>
         {/* vremea 15 pe zile */}
         <Row>
@@ -216,7 +224,6 @@ export async function getStaticProps({ params }) {
     props: {
       initialApolloState: apolloClient.cache.extract(),
       locationQueryVars: queryVars,
-      weatherDataInit
     },
     revalidate: 1,
   }

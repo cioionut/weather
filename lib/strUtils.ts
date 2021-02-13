@@ -13,3 +13,5 @@ export const formatForURL = (str: String, delim='-') => {
 export const checkTime = (i: Number) => {
     return (i < 10) ? "0" + i : i;
 }
+
+export const capitalizeFirstL = (word: String) => word.length > 0 ? word[0].toUpperCase() + word.slice(1) : word;

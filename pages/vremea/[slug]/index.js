@@ -4,20 +4,24 @@ import useSWR from 'swr';
 import Head from 'next/head';
 
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import { gql, useQuery } from '@apollo/client';
+import { MdLocationOn, MdLocationOff } from "react-icons/md";
 
-import { gql, useQuery } from '@apollo/client'
+// libs
 import { initializeApollo } from '../../../lib/apolloClient'
 
+// components
 import Layout from '../../../components/layout'
 import ListCities from '../../../components/listCities';
-import CurrentWeather from '../../../components/currentweather'
-import DailyWeather from '../../../components/dailyweather'
+import CurrentWeather from '../../../components/currentweather';
+import Daily3hWeather from '../../../components/daily3hweather';
 import { formatForURL } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
 
-import weatherDataInit from '../../../data/weather_data_init';
+// data
+import initWData from '../../../data/init_fday5_weather';
 
-
+// graphQL
 export const ALL_COUNTY_NAMES_QUERY = gql`
     {
         counties {
@@ -41,7 +45,7 @@ export const COUNTY_QUERY = gql`
 `;
 
 
-export default function County({ countyQueryVars, weatherDataInit }) {
+export default function County({ countyQueryVars }) {
 
   let location;
   const { data: graphqlData } = useQuery(
@@ -56,12 +60,24 @@ export default function County({ countyQueryVars, weatherDataInit }) {
   if (locationsByCounty && locationsByCounty.length > 0) {
     countyName = locationsByCounty[0].account_county.name;
     region = locationsByCounty[0].region;
-  }
+  };
+  let locationIcon = <MdLocationOn/>;
+
+  // set global SWR config
+  let cwSwrConfig = {
+    'initialData': { 'list': initWData.list, 'scity': initWData.city },
+    'revalidateOnMount': true,
+    'revalidateOnFocus': false,
+    'revalidateOnReconnect': false,
+    'dedupingInterval': 10*60*1000,
+    'focusThrottleInterval': 10*60*1000,
+    'errorRetryCount': 0
+  };
   
-  // geolocation
+  // ip geolocation
   const geoIpAPIUrlStr = process.env.NEXT_PUBLIC_FREEGEOIP_API;
   let geoIpAPIUrl = new URL(`${geoIpAPIUrlStr}/json/`);
-  const { data: geoIpData, error: geoIpErr } = useSWR(geoIpAPIUrl, fetcher);
+  const { data: geoIpData, error: geoIpErr } = useSWR(geoIpAPIUrl, fetcher, cwSwrConfig);
 
   if (geoIpData && !geoIpErr) {
     // set location var
@@ -69,35 +85,37 @@ export default function County({ countyQueryVars, weatherDataInit }) {
       name: geoIpData.city,
       account_county: { name: geoIpData.region_name },
       latitude: geoIpData.latitude,
-      longitude: geoIpData.longitude
-    }
+      longitude: geoIpData.longitude,
+    };
+  } else {
+    locationIcon = <MdLocationOff/>
   }
   
-  // weather variables
-  const [weatherData, setWeatherData] = useState(weatherDataInit);
-  const [shouldGetWeather, setShouldGetWeather] = useState(true);
-  // get weather
+  // set weather api params
   const openweatherApiUrl = process.env.NEXT_PUBLIC_OPENWEATHER_API_URL;
   const openweatherApiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  let url = new URL(`${openweatherApiUrl}/onecall`);
+
+  let url = new URL(`${openweatherApiUrl}/forecast`);
   let queryParams = {
-    lat: location ? location.latitude : 0, 
-    lon: location ? location.longitude : 0, 
+    lat: location && location.latitude, 
+    lon: location && location.longitude, 
     lang: 'ro',
     appid: openweatherApiKey,
-    units: 'metric',
-    exclude: 'minutely'
+    units: 'metric'
   };
+  // call owm api
   Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data, error } = useSWR(
-    () => location && shouldGetWeather ? url : null, fetcher);
+  const { data: weatherData, error } = useSWR(
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
 
-  if (data && !error) {
-    setWeatherData(data);
-    setShouldGetWeather(false);
-  }
-  
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);
+
+  // set title
   const title = `Vremea în ${countyName}, ${region}, Prognoza Meteo pe 15 zile`;
+
   // render
   return (
     <Layout>
@@ -113,42 +131,35 @@ export default function County({ countyQueryVars, weatherDataInit }) {
       </Head>
       <Container>
         <Row className="justify-content-center">
-          <h1 className="text-center">Vremea în {location && location.name}, județul {location ? location.account_county.name : countyName}</h1>
-        </Row>
-        {/* vremea curenta */}
-        <hr/>
-        <Row>
           <Col>
-            <h2>Vremea acum</h2>
+            {location
+              ? <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}</h1>
+
+              : <h1 className="text-center">Vremea în județul {countyName} </h1>
+            }
           </Col> 
         </Row>
-        <hr style={{marginTop: 0}}/>
-        <Row>
-          <CurrentWeather weatherData={weatherData}/>
-        </Row>
-        {/* vremea pe zile */}
-        <Row>
-          <Col>
-            <h3>Vremea in urmatoarele 7 zile</h3>
-          </Col> 
-        </Row>
-        <hr style={{marginTop: 0}}/>
-        <Row>
-          <DailyWeather daily={weatherData.daily} />
-        </Row>
-        {/* vremea 15 pe zile */}
-        <Row>
-          <Col>
-            <h3>Prognoza meteo pe 15 zile</h3>
-          </Col> 
-        </Row>
-        <hr style={{marginTop: 0}}/>
-        <Row>
-          <Col>
-            <Button disabled>Cere raportul detaliat</Button>
-          </Col>
-        </Row>
-        <hr/>
+        {location && 
+        <>
+          {/* vremea curenta */}
+          <hr/>
+          <Row>
+            <Col>
+              <h2>Vremea acum</h2>
+            </Col> 
+          </Row>
+          <hr style={{marginTop: 0}}/>
+          <Row>
+            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
+          </Row>
+          <Row>
+            <Col className="text-right" style={{ fontWeight: '350' }}>
+              <p>{locationIcon} Meteo folosind locația dispozitivului tău</p>
+            </Col>
+          </Row>
+          <hr/>
+        </>
+        }
         <Row>
           <Col xs={12}>
             <h3>Vezi cum va fi vremea în următoarele zile în județul {countyName}, {region}</h3>
@@ -196,8 +207,7 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       initialApolloState: apolloClient.cache.extract(),
-      countyQueryVars,
-      weatherDataInit
+      countyQueryVars
     },
     revalidate: 1,
   }
