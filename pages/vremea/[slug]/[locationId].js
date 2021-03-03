@@ -3,7 +3,6 @@ import Link from 'next/link';
 import useSWR from 'swr';
 import { gql, useQuery } from '@apollo/client'
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { useState } from 'react';
 
 // local
 // libs
@@ -16,7 +15,7 @@ import Layout from '../../../components/layout';
 import CurrentWeather from '../../../components/currentweather'
 import Daily3hWeather from '../../../components/daily3hweather'
 import WeatherStatPair from '../../../components/weatherstatpair'
-import ListCities from '../../../components/listCities'
+import MainAdBanner from '../../../components/main_ad_banner'
 
 // data
 import initWData from '../../../data/init_fday5_weather';
@@ -128,6 +127,12 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         <hr style={{marginTop: 0}}/>
         <Row>
           <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
+        </Row>
+        {/* main ad banner */}
+        <Row>
+          <Col>
+            <MainAdBanner />
+          </Col>
         </Row>
         {/* vremea pe zile */}
         <Row>

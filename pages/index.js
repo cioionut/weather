@@ -18,6 +18,7 @@ import Daily3hWeather from '../components/daily3hweather';
 import ListCities from '../components/listCities';
 import ListCounties from '../components/listCounties';
 import WeatherStatPair from '../components/weatherstatpair';
+import MainAdBanner from '../../../components/main_ad_banner';
 
 // data
 import roMajorCities from '../data/mmajor_ro_cities';
@@ -133,6 +134,12 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         <Row>
           <Col className="text-right" style={{ fontWeight: '350' }}>
             <p>{locationIcon} Meteo folosind locația dispozitivului tău</p>
+          </Col>
+        </Row>
+        {/* main ad banner */}
+        <Row>
+          <Col>
+            <MainAdBanner />
           </Col>
         </Row>
         {/* vremea pe zile */}

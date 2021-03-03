@@ -11,11 +11,12 @@ import { MdLocationOn, MdLocationOff } from "react-icons/md";
 import { initializeApollo } from '../../../lib/apolloClient'
 
 // components
-import Layout from '../../../components/layout'
+import Layout from '../../../components/layout';
 import ListCities from '../../../components/listCities';
 import CurrentWeather from '../../../components/currentweather';
 import { formatForURL } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
+import MainAdBanner from '../../../components/main_ad_banner';
 
 // data
 import initWData from '../../../data/init_fday5_weather';
@@ -159,6 +160,12 @@ export default function County({ countyQueryVars }) {
           <hr/>
         </>
         }
+        {/* main ad banner */}
+        <Row>
+          <Col>
+            <MainAdBanner />
+          </Col>
+        </Row>
         <Row>
           <Col xs={12}>
             <h3>Vezi cum va fi vremea în următoarele zile în județul {countyName}, {region}</h3>
