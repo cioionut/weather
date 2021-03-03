@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { Row, Table, Accordion, ListGroup, Col, Container } from 'react-bootstrap';
 import TempDegree from './tempdegree';
 import { rodays, romonths } from '../lib/constants';

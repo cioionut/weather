@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { Row, Col, Container } from 'react-bootstrap';
 import styles from '../styles/weather.module.css'
 import gstyles from '../styles/mobile.module.css';
