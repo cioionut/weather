@@ -1,1 +1,0 @@
-{"pageProps":{"initialApolloState":{"ROOT_QUERY":{"__typename":"Query","locationsByCounty({\"countyName\":\"satu-mare\",\"orderBy\":{\"name\":\"asc\"}})":[]}},"countyQueryVars":{"countyName":"satu-mare","orderBy":{"name":"asc"}}},"__N_SSG":true}
