@@ -90,7 +90,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
     units: 'metric'
   };
 
-  // make the call
+  // call owm api
   Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
     () => location.latitude ? url : null, fetcher, cwSwrConfig);
@@ -112,7 +112,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         <meta property="og:url" content="https://vremea.ionkom.com/"></meta>
         <meta
             name="description"
-            content="Vremea în Romania. Vezi prognoza meteo detaliata pentru luna curenta, Starea vremii cuprinde cu temperatura, precipitațiile, vântul si umiditatea pentru 15 zile. Vezi vremea pentru localitățile din"
+            content="Vremea în România. Vezi prognoza meteo detaliata pentru luna curenta, Starea vremii prezintă temperatura, precipitațiile, vântul si umiditatea pentru 15 zile. Vezi vremea pe ore sau zile în localitățile din România."
         />
       </Head>
       <Container>

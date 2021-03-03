@@ -87,17 +87,17 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
     appid: openweatherApiKey,
     units: 'metric'
   };
-  // // call owm api
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // get weather from nextjs api routes
+  // call owm api
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
-    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-    fetcher, cwSwrConfig);  
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);  
   
-  const title = `Vremea în ${location.name}, ${location.account_county.name}, ${location.region}, Prognoza Meteo pe 15 zile `
+  const title = `Vremea în ${location.name}, județul ${location.account_county.name} - Meteo pe 15 zile `
   // render
   return (
     <Layout>
