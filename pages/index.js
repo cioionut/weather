@@ -138,14 +138,10 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           </Col>
         </Row>
         {/* daily weather */}
-        <Row>
+        <Row id='forecast-next-days'>
           <Col>
-            <h3 id='forecast-next-days'>Vremea in urmatoarele zile</h3>
-          </Col> 
-        </Row>
-        <hr style={{marginTop: 0}}/>
-        <Row>
-          <Daily3hWeather daily={weatherData.list} />
+            <Daily3hWeather daily={weatherData.list} />
+          </Col>
         </Row>
         {/* next 15 days */}
         <Row>
