@@ -4,7 +4,6 @@ import { gql, useQuery } from '@apollo/client';
 
 import useSWR from 'swr';
 
-import { MdLocationOn, MdLocationOff } from "react-icons/md";
 
 // local
 // libs
@@ -15,6 +14,7 @@ import { initializeApollo } from '../lib/apolloClient';
 import Layout, { siteTitle } from '../components/layout';
 import CurrentWeather from '../components/currentweather';
 import Daily3hWeather from '../components/daily3hweather';
+import HourlyWeather from '../components/3hourlyweather';
 import ListCities from '../components/listCities';
 import ListCounties from '../components/listCounties';
 import WeatherStatPair from '../components/weatherstatpair';
@@ -45,7 +45,8 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
     }
   );
   let { counties } = gqlData;
-  let locationIcon = <MdLocationOn/>;
+  let locDetect = false;
+
   let location;
 
   // set global SWR config
@@ -75,7 +76,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
   } else {
     // set default location to Bucharest
     location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
-    locationIcon = <MdLocationOff/>
+    locDetect = true;
   }
 
   // set weather api params
@@ -91,25 +92,26 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
     units: 'metric'
   };
 
-  // call owm api
-  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data: weatherData, error } = useSWR(
-    () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // // get weather from nextjs api routes
+  // // call owm api
+  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-  //   fetcher, cwSwrConfig);
+  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
 
-  const title = `Vremea în România, 15 zile de prognoză meteo precisă`;
+  // get weather from nextjs api routes
+  const { data: weatherData, error } = useSWR(
+    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+    fetcher, cwSwrConfig);
+
+  // set titles
+  const pageTitle = `Vremea în România, 15 zile de prognoză meteo precisă`;
 
   // render
   return (
     <Layout home>
       <Head>
-        <title>{title}</title>
-        <meta property="og:site_name" content={title}></meta>
-        <meta property="og:title" content={`${title}`}></meta>
+        <title>{pageTitle}</title>
+        <meta property="og:site_name" content={pageTitle}></meta>
+        <meta property="og:title" content={`${pageTitle}`}></meta>
         <meta property="og:url" content="https://vremea.ionkom.com/"></meta>
         <meta
             name="description"
@@ -117,23 +119,10 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         />
       </Head>
       <Container>
-        {/* site title */}
-        <Row className="mt-2">
+        {/* current weather */}
+        <Row className="mt-1">
           <Col>
-            {location
-              ? <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}</h1>
-              : <h1 className="text-center">Vremea</h1>
-            }
-            {/* <p>Orice plan tine cont si de vremea de afara. Ia cele mai bune decizii de vacanta urmarind buletinul meteo curent sau prognoza vremii pentru 15 zile. La <Link href='/vremea/mamaia-constanta/10850'>mare</Link>? La <Link href='/vremea/poiana-brasov-brasov/2714'>munte</Link>? Tu decizi [mai putin vremea hahaha].</p> */}
-          </Col>          
-        </Row>
-        {/* vremea curenta */}
-        <Row className="mt-5">
-          <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
-        </Row>
-        <Row>
-          <Col className="text-right" style={{ fontWeight: '350' }}>
-            <p>{locationIcon} Meteo folosind locația dispozitivului tău</p>
+            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} />
           </Col>
         </Row>
         {/* main ad banner */}
@@ -142,17 +131,23 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
             <MainAdBanner />
           </Col>
         </Row>
-        {/* vremea pe zile */}
+        {/* hourly weather */}
+        <Row className="mt-1">
+          <Col>
+            <HourlyWeather daily={weatherData.list} location={location} />
+          </Col>
+        </Row>
+        {/* daily weather */}
         <Row>
           <Col>
-            <h3>Vremea in urmatoarele zile</h3>
+            <h3 id='forecast-next-days'>Vremea in urmatoarele zile</h3>
           </Col> 
         </Row>
         <hr style={{marginTop: 0}}/>
         <Row>
           <Daily3hWeather daily={weatherData.list} />
         </Row>
-        {/* vremea 15 pe zile */}
+        {/* next 15 days */}
         <Row>
           <Col>
             <h3>Prognoza meteo pe 15 zile</h3>
