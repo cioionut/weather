@@ -100,18 +100,22 @@ export default function County({ countyQueryVars }) {
     appid: openweatherApiKey,
     units: 'metric'
   };
-  // call owm api
-  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data: weatherData, error } = useSWR(
-    () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // // get weather from nextjs api routes
+  // // call owm api
+  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-  //   fetcher, cwSwrConfig);
+  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // get weather from nextjs api routes
+  const { data: weatherData, error } = useSWR(
+    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+    fetcher, cwSwrConfig);
 
   // set title
   const title = `Vremea în județul ${countyName} - Meteo pe 15 zile`;
+  const buttons = [
+    <Button key="1" style={{borderRadius: 16, fontWeight: 450}} size="sm" href="/#today-hourly" variant="outline-primary">Următoarele Ore</Button>,
+    <Button key="2" style={{borderRadius: 16, fontWeight: 450, marginLeft: "0.5rem"}} size="sm" href="/#forecast-next-days" variant="outline-primary">5 zile</Button>,
+  ];
 
   // render
   return (
@@ -131,7 +135,7 @@ export default function County({ countyQueryVars }) {
         <Row className="mt-1">
           <Col>
             {location
-              ? <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} />
+              ? <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} buttons={buttons} />
               : <h1 className="text-center">Vremea în județul {countyName}, regiunea {region}</h1>
             }
           </Col>

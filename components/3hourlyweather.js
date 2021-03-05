@@ -36,7 +36,7 @@ export default function HourlyWeather({ daily, location }) {
       <Card>
         <Card.Body>
           <Card.Title>
-            <h2 style={{fontSize: "1.3rem"}}>{ title }</h2>
+            <h2 id="today-hourly" style={{fontSize: "1.3rem"}}>{ title }</h2>
           </Card.Title>
           <Card.Subtitle className="mb-2 text-muted" style={{ fontWeight: '400' }}>Prognoza meteo pe ore începând de acum {timeDisp} </Card.Subtitle>
           <Container className="pr-0 pl-0">

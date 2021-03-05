@@ -9,6 +9,7 @@ import useSWR from 'swr';
 // libs
 import { fetcher } from '../lib/fetchUtils';
 import { initializeApollo } from '../lib/apolloClient';
+import { formatForURL } from '../lib/strUtils';
 
 // components
 import Layout, { siteTitle } from '../components/layout';
@@ -20,7 +21,7 @@ import ListCounties from '../components/listCounties';
 import WeatherStatPair from '../components/weatherstatpair';
 import MainAdBanner, { HeadCardAd } from '../components/main_ad_banner';
 import FooterAdBanner from '../components/footer_ad_banner';
-import SideBarAd, { SideBarCardAd } from '../components/sidebar_ad';
+// import SideBarAd, { SideBarCardAd } from '../components/sidebar_ad';
 
 
 // data
@@ -108,8 +109,16 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
   // set titles
   const pageTitle = `Vremea în România, 15 zile de prognoză meteo precisă`;
   const buttons = [
-    <Button key="1" style={{borderRadius: 16, fontWeight: 450}} size="sm" href="#forecast-next-days">Vezi vremea pe zile</Button>
-  ]
+    <Button key="1" style={{borderRadius: 16, fontWeight: 450}} size="sm" href="#today-hourly" variant="outline-primary">Următoarele Ore</Button>,
+    <Button key="2" style={{borderRadius: 16, fontWeight: 450, marginLeft: "0.5rem"}} size="sm" href="#forecast-next-days" variant="outline-primary">5 zile</Button>,
+  ];
+  if (location && location.account_county.name)
+    buttons.push(
+    <Button key="3" style={{borderRadius: 16, fontWeight: 450, marginLeft: "0.5rem", marginTop: 3 }} 
+      size="sm" href={`/vremea/${formatForURL(location.account_county.name)}`}
+      variant="outline-primary"
+    >
+      În {location.account_county.name}</Button>)
 
   // render
   return (
@@ -125,16 +134,16 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         />
       </Head>
       <Container>
-        {/* main ad banner */}
-        <Row>
-          <Col md={12}>
-            <MainAdBanner />
-          </Col>
-        </Row>
         {/* current weather */}
         <Row className="mt-1">
           <Col>
             <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} buttons={buttons} />
+          </Col>
+        </Row>
+        {/* main ad banner */}
+        <Row>
+          <Col md={12}>
+            <MainAdBanner />
           </Col>
         </Row>
         {/* hourly weather */}
@@ -142,9 +151,9 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           <Col>
             <HourlyWeather daily={weatherData.list} location={location} />
           </Col>
-          <Col md={4}>
+          {/* <Col md={4}>
             <SideBarAd />
-          </Col>
+          </Col> */}
         </Row>
         {/* daily weather */}
         <Row className="mt-1" id='forecast-next-days'>
@@ -184,14 +193,14 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         <hr/>
         <Row>
           <Col xs={12}>
-            <h3>Cum se prezinta vremea in marile orase ale Romaniei</h3>
+            <h3 id="cities">Cum se prezinta vremea in marile orase ale Romaniei</h3>
             <ListCities cities={roMajorCities}/>
           </Col>
         </Row>
         <hr/>
         <Row>
           <Col xs={12}>
-            <h3>Prognoza meteo pe judete</h3>
+            <h3 id="counties">Prognoza meteo pe judete</h3>
             <ListCounties counties={counties}/>
           </Col>
         </Row>

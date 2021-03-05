@@ -48,8 +48,8 @@ export default function Daily3hWeather({ daily, location }) {
               {
                 weatherDayMap.map((weatherPair, idx) =>
                   <div key={idx}>
-                  <Row>
-                    <Col className="mt-3">
+                  <Row className="mt-3">
+                    <Col>
                       <Card.Text style={{ fontWeight: "450", fontSize: "1.115rem"}}>{weatherPair.weatherDateDisp}</Card.Text>
                     </Col>
                     <Accordion defaultActiveKey="0" className="container">
@@ -57,7 +57,7 @@ export default function Daily3hWeather({ daily, location }) {
                     </Accordion>
                   </Row>
                   {
-                    (idx % 2 === 0 && weatherPair.listDaily.length > 5) &&
+                    (idx % 2 === 0) &&
                     <Row>
                       <Col className="pr-0 pl-0">
                         <Card style={{border: 0}}>
@@ -70,11 +70,6 @@ export default function Daily3hWeather({ daily, location }) {
                   </div>
                 )
               }
-            <Row className="mt-3">
-              <Col>
-                <Button style={{borderRadius: 16, fontWeight: 450}} size="sm" href="#forecast-next-days">Vezi vremea pe zile</Button>
-              </Col>
-            </Row>
           </Container>
         </Card.Body>
       </Card>

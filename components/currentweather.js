@@ -54,7 +54,7 @@ export default function CurrentWeather({ weatherData, locDetect, location, butto
     )
   })
   return (
-    <Card>
+    <Card className="mb-2">
       <Card.Body>
         <Card.Title>
           <h1 style={{fontSize: "1.3rem"}}>{ title }</h1>
@@ -90,13 +90,9 @@ export default function CurrentWeather({ weatherData, locDetect, location, butto
           {
             buttons && (
               <Row className="mt-3">
-                {
-                  buttons.map((button, idx) => 
-                    <Col key={idx}>
-                      { button }
-                    </Col>
-                  )
-                }
+                <Col>
+                  { buttons }
+                </Col>
               </Row>
             )
           }

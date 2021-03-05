@@ -18,7 +18,7 @@ import HourlyWeather from '../../../components/3hourlyweather';
 import WeatherStatPair from '../../../components/weatherstatpair';
 import MainAdBanner from '../../../components/main_ad_banner';
 import FooterAdBanner from '../../../components/footer_ad_banner';
-import SideBarAd from '../../../components/sidebar_ad';
+// import SideBarAd from '../../../components/sidebar_ad';
 
 // data
 import initWData from '../../../data/init_fday5_weather';
@@ -89,17 +89,29 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
     appid: openweatherApiKey,
     units: 'metric'
   };
-  // call owm api
-  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  const { data: weatherData, error } = useSWR(
-    () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // // get weather from nextjs api routes
+  // // call owm api
+  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-  //   fetcher, cwSwrConfig);  
+  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // get weather from nextjs api routes
+  const { data: weatherData, error } = useSWR(
+    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+    fetcher, cwSwrConfig);  
   
-  const title = `Vremea în ${location.name}, județul ${location.account_county.name} - Meteo pe 15 zile `
+  const title = `Vremea în ${location.name}, județul ${location.account_county.name} - Meteo pe 15 zile `;
+  const buttons = [
+    <Button key="1" style={{borderRadius: 16, fontWeight: 450}} size="sm" href="#today-hourly" variant="outline-primary">Următoarele Ore</Button>,
+    <Button key="2" style={{borderRadius: 16, fontWeight: 450, marginLeft: "0.5rem"}} size="sm" href="#forecast-next-days" variant="outline-primary">5 zile</Button>,
+  ];
+  if (location && location.account_county.name)
+    buttons.push(
+    <Button key="3" style={{borderRadius: 16, fontWeight: 450, marginLeft: "0.5rem", marginTop: 3 }} 
+      size="sm" href={`/vremea/${formatForURL(location.account_county.name)}`}
+      variant="outline-primary"
+    >
+      În {location.account_county.name}</Button>)
+
   // render
   return (
     <Layout>
@@ -117,7 +129,7 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         {/* current weather */}
         <Row className="mt-1">
           <Col>
-            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} />
+            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} buttons={buttons}/>
           </Col>
         </Row>
         {/* main ad banner */}
@@ -131,9 +143,9 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
           <Col>
             <HourlyWeather daily={weatherData.list} location={location} />
           </Col>
-          <Col md={4}>
+          {/* <Col md={4}>
             <SideBarAd />
-          </Col>
+          </Col> */}
         </Row>
         {/* daily weather */}
         <Row className="mt-1" id='forecast-next-days'>
@@ -167,20 +179,8 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
           </Col>
         </Row>
         <hr/>
-        <Row>
-          <Col xs={12}>
-            <h3>
-              <Link href={`/vremea/${formatForURL(location.account_county.name)}`}>
-                <a>
-                Prognoza meteo in celelalte localitati din judetul {location.account_county.name}
-                </a>
-              </Link>
-            </h3>
-            {/* <ListCities cities={locationsByCounty}/> */}
-          </Col>
-        </Row>
         {/* footer ad banner */}
-        <Row>
+        <Row className="mt-1">
           <Col>
             <FooterAdBanner />
           </Col>

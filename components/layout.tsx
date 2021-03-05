@@ -36,12 +36,12 @@ export default function Layout({
               <Link href="/" passHref>
                 <Nav.Link>Home</Nav.Link>
               </Link>
-              <Link href="/" passHref>
-                <Nav.Link>Vremea Acum</Nav.Link>
+              <Link href="/#cities" passHref>
+                <Nav.Link>Orașe</Nav.Link>
               </Link>
-              {/* <Link href="/judete" passHref>
-                <Nav.Link>Judete</Nav.Link>
-              </Link> */}
+              <Link href="/#counties" passHref>
+                <Nav.Link>Județe</Nav.Link>
+              </Link>
               {/* <Link href="/localitati" passHref>
                 <Nav.Link>Localitati</Nav.Link>
               </Link> */}

@@ -7,7 +7,7 @@ import styles from '../styles/mobile.module.css';
 export default function ListCounties(props) {
   let counties = props.counties.map((county, index) => {
     return (
-      <Col md={3} ms="auto" xs="auto" key={index}>
+      <Col md={3} xs={4} key={index}>
         <Link href={`/vremea/${formatForURL(county.name)}`}>
           {county.name}
         </Link>
@@ -16,7 +16,7 @@ export default function ListCounties(props) {
   })
   return (
     <Container fluid>
-      <Row className={`flex-nowrap flex-sm-wrap ${styles.mobileRow}`}>
+      <Row>
         {counties}
       </Row>
     </Container>
