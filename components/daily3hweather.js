@@ -57,13 +57,15 @@ export default function Daily3hWeather({ daily, location }) {
                     </Accordion>
                   </Row>
                   {
-                    (idx % 2 === 0)
-                    ? <Row>
-                        <Col>
+                    (idx % 2 === 0 && weatherPair.listDaily.length > 5) &&
+                    <Row>
+                      <Col className="pr-0 pl-0">
+                        <Card style={{border: 0}}>
+                          <Card.Text className="text-right mt-1 mb-0 mr-1 text-muted" style={{fontSize: "0.8rem"}}>Advertisement</Card.Text>
                           <FeedAd/>
-                        </Col>
-                      </Row>
-                    : ''
+                        </Card>
+                      </Col>
+                    </Row>
                   }
                   </div>
                 )
