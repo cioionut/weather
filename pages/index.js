@@ -18,7 +18,10 @@ import HourlyWeather from '../components/3hourlyweather';
 import ListCities from '../components/listCities';
 import ListCounties from '../components/listCounties';
 import WeatherStatPair from '../components/weatherstatpair';
-import MainAdBanner from '../components/main_ad_banner';
+import MainAdBanner, { HeadCardAd } from '../components/main_ad_banner';
+import FooterAdBanner from '../components/footer_ad_banner';
+import SideBarAd, { SideBarCardAd } from '../components/sidebar_ad';
+
 
 // data
 import roMajorCities from '../data/mmajor_ro_cities';
@@ -73,10 +76,10 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
       latitude: geoIpData.latitude,
       longitude: geoIpData.longitude,
     };
+    locDetect = true;
   } else {
     // set default location to Bucharest
     location = roMajorCities.filter((location) => location.id == 2715)[0]; // Bucuresti default
-    locDetect = true;
   }
 
   // set weather api params
@@ -92,18 +95,21 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
     units: 'metric'
   };
 
-  // // call owm api
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // get weather from nextjs api routes
+  // call owm api
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
-    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-    fetcher, cwSwrConfig);
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);
 
   // set titles
   const pageTitle = `Vremea în România, 15 zile de prognoză meteo precisă`;
+  const buttons = [
+    <Button key="1" style={{borderRadius: 16, fontWeight: 450}} size="sm" href="#forecast-next-days">Vezi vremea pe zile</Button>
+  ]
 
   // render
   return (
@@ -122,12 +128,12 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
         {/* current weather */}
         <Row className="mt-1">
           <Col>
-            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} />
+            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} buttons={buttons} />
           </Col>
         </Row>
         {/* main ad banner */}
         <Row>
-          <Col>
+          <Col md={12}>
             <MainAdBanner />
           </Col>
         </Row>
@@ -136,9 +142,12 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           <Col>
             <HourlyWeather daily={weatherData.list} location={location} />
           </Col>
+          <Col md={4}>
+            <SideBarAd />
+          </Col>
         </Row>
         {/* daily weather */}
-        <Row id='forecast-next-days'>
+        <Row className="mt-1" id='forecast-next-days'>
           <Col>
             <Daily3hWeather daily={weatherData.list} />
           </Col>
@@ -161,12 +170,12 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           location &&
           <Row>
             <Col>
-              <h3>Detalii geografice despre {location.name} </h3>
+              <h3>Despre {location.name} </h3>
+              <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
               <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
               <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
                 Arata {location.name} in Google Maps.
               </a>
-              <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
             </Col>
           </Row>
         }
@@ -184,6 +193,12 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           <Col xs={12}>
             <h3>Prognoza meteo pe judete</h3>
             <ListCounties counties={counties}/>
+          </Col>
+        </Row>
+        {/* footer ad banner */}
+        <Row>
+          <Col>
+            <FooterAdBanner />
           </Col>
         </Row>
       </Container>

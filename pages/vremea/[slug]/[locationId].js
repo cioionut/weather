@@ -12,10 +12,13 @@ import { fetcher } from '../../../lib/fetchUtils';
 
 // components
 import Layout from '../../../components/layout';
-import CurrentWeather from '../../../components/currentweather'
-import Daily3hWeather from '../../../components/daily3hweather'
-import WeatherStatPair from '../../../components/weatherstatpair'
-import MainAdBanner from '../../../components/main_ad_banner'
+import CurrentWeather from '../../../components/currentweather';
+import Daily3hWeather from '../../../components/daily3hweather';
+import HourlyWeather from '../../../components/3hourlyweather';
+import WeatherStatPair from '../../../components/weatherstatpair';
+import MainAdBanner from '../../../components/main_ad_banner';
+import FooterAdBanner from '../../../components/footer_ad_banner';
+import SideBarAd from '../../../components/sidebar_ad';
 
 // data
 import initWData from '../../../data/init_fday5_weather';
@@ -86,15 +89,15 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
     appid: openweatherApiKey,
     units: 'metric'
   };
-  // // call owm api
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // get weather from nextjs api routes
+  // call owm api
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
-    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-    fetcher, cwSwrConfig);  
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);  
   
   const title = `Vremea în ${location.name}, județul ${location.account_county.name} - Meteo pe 15 zile `
   // render
@@ -111,40 +114,34 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         />
       </Head>
       <Container>
-        {/* site title */}
-        <Row className="mt-2">
+        {/* current weather */}
+        <Row className="mt-1">
           <Col>
-            <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}, {location.region}</h1>
-          </Col>          
-        </Row>
-        {/* vremea curenta */}
-        <hr/>
-        <Row>
-          <Col>
-            <h2>Vremea acum</h2>
-          </Col> 
-        </Row>
-        <hr style={{marginTop: 0}}/>
-        <Row>
-          <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
+            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} />
+          </Col>
         </Row>
         {/* main ad banner */}
-        <Row>
+        <Row md={12}>
           <Col>
             <MainAdBanner />
           </Col>
         </Row>
-        {/* vremea pe zile */}
-        <Row>
+        {/* hourly weather */}
+        <Row className="mt-1">
           <Col>
-            <h3>Vremea in urmatoarele zile</h3>
-          </Col> 
+            <HourlyWeather daily={weatherData.list} location={location} />
+          </Col>
+          <Col md={4}>
+            <SideBarAd />
+          </Col>
         </Row>
-        <hr style={{marginTop: 0}}/>
-        <Row>
-          <Daily3hWeather daily={weatherData.list} />
+        {/* daily weather */}
+        <Row className="mt-1" id='forecast-next-days'>
+          <Col>
+            <Daily3hWeather daily={weatherData.list} />
+          </Col>
         </Row>
-        {/* vremea 15 pe zile */}
+        {/* next 15 days */}
         <Row>
           <Col>
             <h3>Prognoza meteo pe 15 zile</h3>
@@ -160,12 +157,13 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         <hr/>
         <Row>
           <Col>
-            <h3>Detalii geografice despre {location.name} </h3>
+            <h3>Despre {location.name} </h3>
+            <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
+            <p>Siruta: {location.siruta} </p>
             <p>Coordonate geografice: <WeatherStatPair pkey='latitudine' value={location.latitude} />; <WeatherStatPair pkey='longitudine' value={location.longitude} /></p>
             <a href={`http://www.google.com/maps/place/${location.latitude},${location.longitude}`} target="_blank">
               Arata {location.name} in Google Maps.
             </a>
-            <p>Localitatea {location.name} face parte din judetul {location.account_county.name} din regiunea {location.region} a Romaniei</p>
           </Col>
         </Row>
         <hr/>
@@ -179,6 +177,12 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
               </Link>
             </h3>
             {/* <ListCities cities={locationsByCounty}/> */}
+          </Col>
+        </Row>
+        {/* footer ad banner */}
+        <Row>
+          <Col>
+            <FooterAdBanner />
           </Col>
         </Row>
       </Container>

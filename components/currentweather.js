@@ -8,13 +8,12 @@ import WeatherStatPair from './weatherstatpair';
 import { capitalizeFirstL } from '../lib/strUtils';
 
 
-export default function CurrentWeather({ weatherData, locDetect, location }) {
+export default function CurrentWeather({ weatherData, locDetect, location, buttons }) {
   const currentTime = new Date();
   // const timeDsip = `${String(currentTime.getHours()).padStart(2, '0')}:${String(currentTime.getMinutes()).padStart(2, '0')}`;
   const timeDisp = currentTime.toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
-  const locationIcon = locDetect ? <MdLocationOn/> : <MdLocationOff/>;
-  const locDetection = locDetect ? 'Locația pornită': 'Locație oprită';
-  const title = location ? `Vremea în ${location.name}, județul ${location.account_county.name}` : 'Vremea';
+  const locationIcon = locDetect ? <MdLocationOn color="blue" /> : <MdLocationOff color="red" />;
+  const title = location && location.name ? `Vremea în ${location.name}, județul ${location.account_county.name}` : 'Vremea';
 
   // convert to api-current response
   if (weatherData && 'current' in weatherData) {
@@ -50,7 +49,7 @@ export default function CurrentWeather({ weatherData, locDetect, location }) {
   ].map((obj, index) => {
     return (
       <Col key={index} className={`${gstyles.mobileCol}`}>
-        <WeatherStatPair pkey={obj.pkey} value={obj.value} />
+        <WeatherStatPair key={index} pkey={obj.pkey} value={obj.value} />
       </Col>
     )
   })
@@ -60,7 +59,7 @@ export default function CurrentWeather({ weatherData, locDetect, location }) {
         <Card.Title>
           <h1 style={{fontSize: "1.3rem"}}>{ title }</h1>
         </Card.Title>
-        <Card.Subtitle className="mb-2 text-muted" style={{ fontWeight: '400' }}>Prognoza meteo { timeDisp } | {locationIcon} {locDetection}</Card.Subtitle>
+        <Card.Subtitle className="mb-2 text-muted" style={{ fontWeight: '400' }}>Prognoza meteo { timeDisp } | {locationIcon}</Card.Subtitle>
         <Container className="pl-0">
           <Row className="justify-content-center">
             <Col xs='auto' className='pl-0 pr-0'>
@@ -88,11 +87,20 @@ export default function CurrentWeather({ weatherData, locDetect, location }) {
           <Row className={`flex-nowrap flex-sm-wrap ${gstyles.mobileRow}`}>
             {weatherStatPairs}
           </Row>
-          <Row className="mt-3">
-            <Col>
-              <Button style={{borderRadius: 16, fontWeight: 450}} size="sm" href="#forecast-next-days">Vezi vremea pe zile</Button>
-            </Col>
-          </Row>
+          {
+            buttons && (
+              <Row className="mt-3">
+                {
+                  buttons.map((button, idx) => 
+                    <Col key={idx}>
+                      { button }
+                    </Col>
+                  )
+                }
+              </Row>
+            )
+          }
+
         </Container>
       </Card.Body>
     </Card>

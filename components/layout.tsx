@@ -62,10 +62,16 @@ export default function Layout({
               </Row>
               <Row>
                 <Col xs='auto'>
-                  <Link href="https://ionkom.com/about"><a className={styles.footerLink}>About</a></Link>
+                  <Link href="https://ionkom.com/about"><a className={styles.footerLink} target="_blank">About</a></Link>
                 </Col>
                 <Col xs='auto'>
-                  <Link href="https://ionkom.com/contact"><a className={styles.footerLink}>Contact</a></Link>
+                  <Link href='https://ionkom.com/policies/privacy'><a className={styles.footerLink} target="_blank">Privacy Policy</a></Link>
+                </Col>
+                <Col xs='auto'>
+                  <Link href='https://ionkom.com/policies/terms'><a className={styles.footerLink} target="_blank">Terms and Conditions</a></Link>
+                </Col>
+                <Col xs='auto'>
+                  <Link href='https://openweathermap.org/'><a className={styles.footerLink} target="_blank" rel="noopener">Weather data from OpenWeather (TM)</a></Link>
                 </Col>
                 {/* <Col xs='auto'>
                   <span className="text-muted">© 2020 Copyright: <Link href="/"><a className={styles.footerLink}>ionkom.com</a></Link></span>

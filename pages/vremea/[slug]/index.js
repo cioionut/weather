@@ -1,11 +1,8 @@
-import { useState } from 'react';
-
 import useSWR from 'swr';
 import Head from 'next/head';
 
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { gql, useQuery } from '@apollo/client';
-import { MdLocationOn, MdLocationOff } from "react-icons/md";
 
 // libs
 import { initializeApollo } from '../../../lib/apolloClient'
@@ -17,6 +14,7 @@ import CurrentWeather from '../../../components/currentweather';
 import { formatForURL } from '../../../lib/strUtils';
 import { fetcher } from '../../../lib/fetchUtils';
 import MainAdBanner from '../../../components/main_ad_banner';
+import FooterAdBanner from '../../../components/footer_ad_banner';
 
 // data
 import initWData from '../../../data/init_fday5_weather';
@@ -48,6 +46,7 @@ export const COUNTY_QUERY = gql`
 export default function County({ countyQueryVars }) {
 
   let location;
+  let locDetect = false;
   const { data: graphqlData } = useQuery(
     COUNTY_QUERY,
     {
@@ -61,7 +60,6 @@ export default function County({ countyQueryVars }) {
     countyName = locationsByCounty[0].account_county.name;
     region = locationsByCounty[0].region;
   };
-  let locationIcon = <MdLocationOn/>;
 
   // set global SWR config
   let cwSwrConfig = {
@@ -87,8 +85,7 @@ export default function County({ countyQueryVars }) {
       latitude: geoIpData.latitude,
       longitude: geoIpData.longitude,
     };
-  } else {
-    locationIcon = <MdLocationOff/>
+    locDetect = true;
   }
   
   // set weather api params
@@ -103,15 +100,15 @@ export default function County({ countyQueryVars }) {
     appid: openweatherApiKey,
     units: 'metric'
   };
-  // // call owm api
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // get weather from nextjs api routes
+  // call owm api
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
-    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-    fetcher, cwSwrConfig);
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);
 
   // set title
   const title = `Vremea în județul ${countyName} - Meteo pe 15 zile`;
@@ -130,46 +127,31 @@ export default function County({ countyQueryVars }) {
         />
       </Head>
       <Container>
-        <Row className="justify-content-center">
+        {/* current weather */}
+        <Row className="mt-1">
           <Col>
             {location
-              ? <h1 className="text-center">Vremea în {location.name}, județul {location.account_county.name}</h1>
-
-              : <h1 className="text-center">Vremea în județul {countyName} </h1>
+              ? <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} />
+              : <h1 className="text-center">Vremea în județul {countyName}, regiunea {region}</h1>
             }
-          </Col> 
+          </Col>
         </Row>
-        {location && 
-        <>
-          {/* vremea curenta */}
-          <hr/>
-          <Row>
-            <Col>
-              <h2>Vremea acum</h2>
-            </Col> 
-          </Row>
-          <hr style={{marginTop: 0}}/>
-          <Row>
-            <CurrentWeather weatherData={weatherData.list && weatherData.list[0]}/>
-          </Row>
-          <Row>
-            <Col className="text-right" style={{ fontWeight: '350' }}>
-              <p>{locationIcon} Meteo folosind locația dispozitivului tău</p>
-            </Col>
-          </Row>
-          <hr/>
-        </>
-        }
         {/* main ad banner */}
         <Row>
-          <Col>
+          <Col md={12}>
             <MainAdBanner />
           </Col>
         </Row>
-        <Row>
+        <Row className="mt-1">
           <Col xs={12}>
-            <h3>Vezi cum va fi vremea în următoarele zile în județul {countyName}, {region}</h3>
+          <h2 style={{fontSize: "1.15rem"}}>Lista localităților din județul {countyName}</h2>
             <ListCities cities={locationsByCounty}/>
+          </Col>
+        </Row>
+        {/* footer ad banner */}
+        <Row>
+          <Col>
+            <FooterAdBanner />
           </Col>
         </Row>
       </Container>
