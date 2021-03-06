@@ -100,15 +100,15 @@ export default function County({ countyQueryVars }) {
     appid: openweatherApiKey,
     units: 'metric'
   };
-  // // call owm api
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // get weather from nextjs api routes
+  // call owm api
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
-    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-    fetcher, cwSwrConfig);
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);
 
   // set title
   const title = `Vremea în județul ${countyName} - Meteo pe 15 zile`;
@@ -134,7 +134,7 @@ export default function County({ countyQueryVars }) {
         {/* current weather */}
         <Row className="mt-1">
           <Col>
-            {location
+            {(location && location.name)
               ? <CurrentWeather weatherData={weatherData.list && weatherData.list[0]} location={location} locDetect={locDetect} buttons={buttons} />
               : <h1 className="text-center">Vremea în județul {countyName}, regiunea {region}</h1>
             }

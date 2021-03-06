@@ -44,7 +44,7 @@ export default function AccordionRow({ dweather, index, timeDisp }) {
           <Container>
             <Row className={`flex-nowrap flex-sm-wrap ${gstyles.mobileRow}`}>
               <Col className={`text-center ${gstyles.mobileCol}`}><span>{capitalizeFirstL(dweather.weather[0].description)}</span></Col>
-              <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Precipitatii' value={`${Math.floor(dweather.pop)*100}%`}/></Col>
+              <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Precipitatii' value={`${Math.floor(dweather.pop * 100)}%`}/></Col>
               <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Umiditate' value={`${dweather.main.humidity}%`}/></Col>
               <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Nori' value={`${Math.floor(dweather.clouds.all)}%`}/></Col>
               <Col className={`text-center ${gstyles.mobileCol}`}><WeatherStatPair pkey='Vant' value={`${Math.floor(dweather.wind.speed*3.6)} kph`}/></Col>

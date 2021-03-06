@@ -13,7 +13,7 @@ export default function HourlyWeather({ daily, location }) {
   const title = `Astăzi la ${location.name}`;
   const currentTime = new Date();
   const timeDisp = currentTime.toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
-  const currentDay = currentTime.getDay();
+  const currentDate = currentTime.getDate();
   const dateTimeDisp = `${rodays[currentTime.getDay()]}, ${currentTime.getDate()} ${ capitalizeFirstL(romonths[currentTime.getMonth()]) }`
 
 
@@ -24,7 +24,7 @@ export default function HourlyWeather({ daily, location }) {
     const timeDisp = dateTime.toLocaleTimeString().replace(/([\d]+)(:[\d]{2})(:[\d]{2})(.*)/, "$1$4").toLowerCase();
 
     // break for other days
-    if (dateTime.getDay() > currentDay) break;
+    if (dateTime.getDate() > currentDate) break;
 
     listDaily.push(
       <AccordionRow key={index} dweather={dweather} index={index} timeDisp={timeDisp} />

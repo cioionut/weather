@@ -7,7 +7,8 @@ import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import CookieConsent from "react-cookie-consent";
 
-import styles from '../styles/layout.module.css'
+import styles from '../styles/layout.module.css';
+import SearchAd from './search_ad';
 
 
 export const siteTitle = 'Vremea'
@@ -30,6 +31,7 @@ export default function Layout({
           <Link href="/" passHref>
             <Navbar.Brand className={styles.logoFont}>{siteTitle}</Navbar.Brand>
           </Link>
+          <SearchAd/>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto"  activeKey={router.pathname}>

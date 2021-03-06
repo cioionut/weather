@@ -7,3 +7,8 @@ h2 {
 h3 {
     font-size: 1.5rem;
 }
+
+/* for google search bar */
+.gsc-control-cse {
+    padding: 0% !important;
+}

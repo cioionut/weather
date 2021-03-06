@@ -96,15 +96,15 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
     units: 'metric'
   };
 
-  // // call owm api
-  // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
-  // const { data: weatherData, error } = useSWR(
-  //   () => location.latitude ? url : null, fetcher, cwSwrConfig);
-
-  // get weather from nextjs api routes
+  // call owm api
+  Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]))
   const { data: weatherData, error } = useSWR(
-    () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
-    fetcher, cwSwrConfig);
+    () => location.latitude ? url : null, fetcher, cwSwrConfig);
+
+  // // get weather from nextjs api routes
+  // const { data: weatherData, error } = useSWR(
+  //   () => location.latitude ? `/api/myforecast?lat=${location.latitude}&lon=${location.longitude}&lang=ro` : null,
+  //   fetcher, cwSwrConfig);
 
   // set titles
   const pageTitle = `Vremea în România, 15 zile de prognoză meteo precisă`;
