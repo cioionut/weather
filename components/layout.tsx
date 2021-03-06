@@ -31,7 +31,9 @@ export default function Layout({
           <Link href="/" passHref>
             <Navbar.Brand className={styles.logoFont}>{siteTitle}</Navbar.Brand>
           </Link>
-          <SearchAd/>
+          <div className={styles.navbarSearchForm}>
+            <SearchAd/>
+          </div>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto"  activeKey={router.pathname}>

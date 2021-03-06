@@ -1,6 +1,8 @@
 .logoFont {
   font-family: Exo, Helvetica, Arial, sans-serif;
   font-weight: 700;
+  font-size: 1.1rem;
+  margin-right: 0.7rem;
 }
 .boxShadow {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
@@ -26,4 +28,15 @@
 }
 .footerLink:hover {  
   color: #5f6368;
+}
+
+@media (min-width: 767px) {
+  .navbarSearchForm {
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 75%;
+    float: none;
+    text-align: center;
+  }
 }
