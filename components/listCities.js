@@ -5,7 +5,7 @@ import { formatForURL } from '../lib/strUtils';
 export default function ListCities(props) {
   let citiesIn = props.cities.map((location, index) => {
     return (
-      <Col md={3} xs={4} key={index}>
+      <Col md={3} xs={4} key={index} className="mt-1">
         <Link href={`/vremea/${formatForURL(location.name)}-${formatForURL(location.account_county.name)}/${location.id}`}>
           {location.name}
         </Link>

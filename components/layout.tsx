@@ -27,13 +27,10 @@ export default function Layout({
           <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <Navbar collapseOnSelect bg="white" expand="lg" className={`align-items-center p-3 px-md-4 mb-3 ${styles.borderBottom} ${styles.boxShadow}`}>
+        <Navbar collapseOnSelect bg="white" expand="lg" className={`align-items-center p-2 px-md-4 mb-1 ${styles.borderBottom} ${styles.boxShadow}`}>
           <Link href="/" passHref>
             <Navbar.Brand className={styles.logoFont}>{siteTitle}</Navbar.Brand>
           </Link>
-          <div className={styles.navbarSearchForm}>
-            <SearchAd/>
-          </div>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ml-auto"  activeKey={router.pathname}>
@@ -55,6 +52,15 @@ export default function Layout({
             </Nav>
           </Navbar.Collapse>
         </Navbar>
+
+        {/* search navbar */}
+        <Container>
+          <Row>
+            <Col>
+              <SearchAd/>
+            </Col>
+          </Row>
+        </Container>
         
         <main>{children}</main>
         <footer className={styles.footer}>

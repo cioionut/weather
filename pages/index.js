@@ -69,7 +69,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
   let geoIpAPIUrl = new URL(`${geoIpAPIUrlStr}/json/`);
   const { data: geoIpData, error: geoIpErr } = useSWR(geoIpAPIUrl, fetcher, cwSwrConfig);
 
-  if (geoIpData && !geoIpErr) {
+  if (geoIpData && !geoIpErr && !geoIpData.city) {
     // set location var
     location = {
       name: geoIpData.city,
@@ -205,7 +205,7 @@ export default function Home({ allCountiesQueryVars, roMajorCities }) {
           </Col>
         </Row>
         {/* footer ad banner */}
-        <Row>
+        <Row className="mt-3">
           <Col>
             <FooterAdBanner />
           </Col>

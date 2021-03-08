@@ -180,7 +180,7 @@ export default function LocationCounty({ locationQueryVars, weatherDataInit }) {
         </Row>
         <hr/>
         {/* footer ad banner */}
-        <Row className="mt-1">
+        <Row className="mt-3">
           <Col>
             <FooterAdBanner />
           </Col>

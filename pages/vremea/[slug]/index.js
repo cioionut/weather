@@ -153,7 +153,7 @@ export default function County({ countyQueryVars }) {
           </Col>
         </Row>
         {/* footer ad banner */}
-        <Row>
+        <Row className="mt-3">
           <Col>
             <FooterAdBanner />
           </Col>
